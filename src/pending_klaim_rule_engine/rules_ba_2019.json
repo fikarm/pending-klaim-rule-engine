@@ -1,0 +1,1535 @@
+{
+    "schema_version": "1.0",
+    "ruleset": {
+        "name": "Pending Klaim - BA 2019 (draf)",
+        "updated_at": "2026-10-17",
+        "description": "Disusun dari rule_ba_2019.pdf dan dicocokkan dengan OCR BA resmi. Periksa kolom verification_note dan open_questions sebelum dipakai."
+    },
+    "rules": [
+        {
+            "id": "RI-HIPOKALEMIA",
+            "title": "Hipokalemia (E87.6)",
+            "type": "clinical_validation",
+            "scope": "RI",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "E87.6"
+                ],
+                "position": "any"
+            },
+            "evidence": {
+                "label": "Kalium < 3,00",
+                "field": "lab.kalium",
+                "op": "lt",
+                "value": 3.0,
+                "unit": "mmol/L",
+                "on_missing": "fail"
+            },
+            "treatment": {
+                "label": "Terapi injeksi KCl",
+                "field": "therapy.drugs",
+                "op": "contains_any",
+                "value": [
+                    "kcl_injeksi"
+                ],
+                "on_missing": "fail"
+            },
+            "required_documents": [
+                "hasil_lab",
+                "resume_medis"
+            ],
+            "outcome": {
+                "pass_message": "Kalium <3,00 dan mendapat injeksi KCl; mendukung E87.6.",
+                "fail_message": "E87.6 tidak didukung: nilai kalium tidak <3,00 atau tidak ada terapi injeksi KCl.",
+                "action_on_fail": "suggest_remove",
+                "severity": "error"
+            },
+            "source": {
+                "document": "BA Kesepakatan Pending Klaim",
+                "year": 2019,
+                "reference": "BA hlm. 36 (butir 6) vs rule_ba_2019.pdf no. 11",
+                "origin_note": "rule_ba_2019.pdf, Hypokalemia",
+                "verified_against_original": false,
+                "verification_note": "TIDAK COCOK dengan BA hlm. 36 (dicek visual): BA menyatakan hipokalemia bila K < 3,5 mEq/L (anak < 3 dan/atau ada gejala; pasien dengan penyakit jantung < 3,5) dan boleh jadi diagnosis sekunder bila ada terapi. Ambang < 3,00 dan 'injeksi KCl' berasal dari rule_ba_2019.pdf."
+            },
+            "open_questions": [
+                "Ambang rule_ba_2019.pdf (<3,00 + injeksi KCl) lebih ketat daripada BA hlm. 36 (<3,5, terapi apa pun). Tetapkan acuan yang dipakai.",
+                "Satuan kalium di dokumen tidak tertulis; BA memakai mEq/L (= mmol/L)."
+            ]
+        },
+        {
+            "id": "RI-GAGAL_NAPAS_AKUT",
+            "title": "Gagal napas akut (J96.0)",
+            "type": "clinical_validation",
+            "scope": "RI",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "J96.0"
+                ],
+                "position": "any"
+            },
+            "evidence": {
+                "label": "Salah satu kriteria gagal napas akut",
+                "any": [
+                    {
+                        "label": "pO2 < 60 mmHg",
+                        "field": "bga.po2",
+                        "op": "lt",
+                        "value": 60,
+                        "unit": "mmHg"
+                    },
+                    {
+                        "label": "SaO2 < 91%",
+                        "field": "bga.sao2",
+                        "op": "lt",
+                        "value": 91,
+                        "unit": "%"
+                    },
+                    {
+                        "label": "SpO2 < 91% (pulse oksimetri)",
+                        "field": "vital.spo2",
+                        "op": "lt",
+                        "value": 91,
+                        "unit": "%"
+                    },
+                    {
+                        "label": "P/F ratio < 300",
+                        "field": "bga.pf_ratio",
+                        "op": "lt",
+                        "value": 300
+                    },
+                    {
+                        "label": "pCO2 > 50 dan pH < 7,35",
+                        "all": [
+                            {
+                                "field": "bga.pco2",
+                                "op": "gt",
+                                "value": 50,
+                                "unit": "mmHg"
+                            },
+                            {
+                                "field": "bga.ph",
+                                "op": "lt",
+                                "value": 7.35
+                            }
+                        ]
+                    },
+                    {
+                        "label": "Kenaikan pCO2 >= 10 dari nilai dasar",
+                        "field": "bga.pco2_delta_from_baseline",
+                        "op": "gte",
+                        "value": 10,
+                        "unit": "mmHg"
+                    }
+                ]
+            },
+            "treatment": {
+                "label": "Salah satu tata laksana gagal napas",
+                "field": "therapy.respiratory_support",
+                "op": "contains_any",
+                "value": [
+                    "nasal_kanul",
+                    "simple_mask",
+                    "rebreathing_mask",
+                    "non_rebreathing_mask",
+                    "venturi_mask",
+                    "high_flow_nasal_kanul",
+                    "cpap",
+                    "bipap",
+                    "ventilator_invasif"
+                ],
+                "on_missing": "fail"
+            },
+            "required_documents": [
+                "hasil_bga",
+                "resume_medis"
+            ],
+            "outcome": {
+                "pass_message": "Kriteria gagal napas akut terpenuhi dan ada tata laksana.",
+                "fail_message": "J96.0 tidak didukung hasil BGA/saturasi dan/atau tata laksana.",
+                "review_message": "Data BGA/saturasi tidak ditemukan; perlu pengecekan manual.",
+                "action_on_fail": "flag"
+            },
+            "source": {
+                "document": "BA Kesepakatan Pending Klaim",
+                "year": 2019,
+                "reference": "BA hlm. 39",
+                "origin_note": "rule_ba_2019.pdf, Respiratory Failure Akut",
+                "verified_against_original": true,
+                "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final. Kelima kriteria cocok."
+            },
+            "open_questions": [
+                "BA hlm. 39 juga memuat kriteria gagal napas akut pada gagal napas kronik; belum ada aturannya (kode ICD tidak disebut)."
+            ]
+        },
+        {
+            "id": "RI-SEPSIS",
+            "title": "Sepsis (A41.-)",
+            "type": "clinical_validation",
+            "scope": "RI",
+            "status": "needs_clarification",
+            "trigger": {
+                "codes": [
+                    "A41.*"
+                ],
+                "position": "any"
+            },
+            "evidence": {
+                "label": "SIRS: minimal 2 dari 4 keadaan (sesuai BA)",
+                "at_least": {
+                    "n": 2,
+                    "of": [
+                        {
+                            "label": "Suhu >38,5 atau <36",
+                            "any": [
+                                {
+                                    "field": "vital.suhu",
+                                    "op": "gt",
+                                    "value": 38.5,
+                                    "unit": "C"
+                                },
+                                {
+                                    "field": "vital.suhu",
+                                    "op": "lt",
+                                    "value": 36,
+                                    "unit": "C"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "Nadi >90",
+                            "field": "vital.nadi",
+                            "op": "gt",
+                            "value": 90,
+                            "unit": "x/menit"
+                        },
+                        {
+                            "label": "RR >20 atau PaCO2 <32",
+                            "any": [
+                                {
+                                    "field": "vital.rr",
+                                    "op": "gt",
+                                    "value": 20,
+                                    "unit": "x/menit"
+                                },
+                                {
+                                    "field": "bga.pco2",
+                                    "op": "lt",
+                                    "value": 32,
+                                    "unit": "mmHg"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "Respons terhadap fokus infeksi: leukositosis + kultur darah bakteremia",
+                            "all": [
+                                {
+                                    "field": "lab.leukosit_tinggi",
+                                    "op": "eq",
+                                    "value": true
+                                },
+                                {
+                                    "field": "lab.kultur_darah_positif",
+                                    "op": "eq",
+                                    "value": true
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            "treatment": {
+                "label": "Ada terapi/tata laksana sepsis",
+                "field": "therapy.sepsis_management",
+                "op": "exists",
+                "on_missing": "fail"
+            },
+            "required_documents": [
+                "resume_medis"
+            ],
+            "outcome": {
+                "pass_message": "Kriteria sepsis terpenuhi dan ada tata laksana.",
+                "fail_message": "A41.- tidak didukung kriteria SIRS/kultur darah/tata laksana.",
+                "review_message": "Data tidak lengkap; perlu review manual.",
+                "action_on_fail": "flag"
+            },
+            "source": {
+                "document": "BA Kesepakatan Pending Klaim",
+                "year": 2019,
+                "reference": "BA hlm. 42",
+                "origin_note": "rule_ba_2019.pdf, Sepsis",
+                "verified_against_original": true,
+                "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final. Teks BA: 'minimal 2 keadaan' dari 4 butir; butir 4 memuat leukositosis dan kultur darah wajib."
+            },
+            "open_questions": [
+                "Aturan di-encode mengikuti teks BA: 2 dari 4 butir, kultur darah hanya wajib bila butir 4 dipakai. Hasil di rule_ba_2019.pdf ('dapat ditemukan dari lab mikrobiologi/leukositosis') bisa berarti kultur selalu wajib. Konfirmasi ke ahli koding.",
+                "Ambang leukositosis tidak ditentukan di BA; fakta lab.leukosit_tinggi tidak dibuat sampai ambang ditetapkan.",
+                "Kode ICD sepsis tidak disebut di dokumen; A41.* adalah asumsi.",
+                "Dokumen wajib dikurangi menjadi resume_medis karena kultur darah hanya wajib bila butir 4 dipakai; pengecekan kultur dilakukan lewat kriteria, bukan dokumen."
+            ]
+        },
+        {
+            "id": "RJ-HF_HIPERTENSI",
+            "title": "Gagal jantung disertai hipertensi (I11.0)",
+            "type": "code_selection",
+            "scope": "ALL",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "I50.*"
+                ],
+                "position": "any"
+            },
+            "violation_when": {
+                "label": "Ada I10 bersama I50.-",
+                "field": "claim.diagnoses",
+                "op": "has_code",
+                "value": "I10"
+            },
+            "outcome": {
+                "pass_message": "Kombinasi sudah benar.",
+                "fail_message": "I50.- dengan I10 harus dikode I11.0.",
+                "action_on_fail": "suggest_replace",
+                "suggest_codes": [
+                    "I11.0"
+                ],
+                "severity": "error"
+            },
+            "source": {
+                "document": "ICD-10",
+                "reference": "Kategori I11.0",
+                "origin_note": "rule_ba_2019.pdf, Heart Failure dengan Hipertensi",
+                "verified_against_original": false,
+                "verification_note": "Tidak ditemukan di OCR BA; berasal dari ICD-10 per rule_ba_2019.pdf."
+            },
+            "open_questions": [
+                "Aturan ini hanya menandai I50.- yang muncul bersama I10. Apakah I50.- boleh tetap dikode bersama I11.0 sebagai kode tambahan perlu dikonfirmasi ke ahli koding."
+            ]
+        },
+        {
+            "id": "RJ-TB_PARU_EKSKLUSI",
+            "title": "Pneumonia dan efusi pleura tidak dikode terpisah pada TB paru",
+            "type": "code_selection",
+            "scope": "ALL",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "A16.*"
+                ],
+                "position": "any"
+            },
+            "extra_conditions": {
+                "label": "Tidak ada kode pneumonia/efusi pleura terpisah",
+                "all": [
+                    {
+                        "field": "claim.diagnoses",
+                        "op": "not_has_code",
+                        "value": "J15.*"
+                    },
+                    {
+                        "field": "claim.diagnoses",
+                        "op": "not_has_code",
+                        "value": "J18.*"
+                    },
+                    {
+                        "field": "claim.diagnoses",
+                        "op": "not_has_code",
+                        "value": "J90"
+                    }
+                ]
+            },
+            "outcome": {
+                "pass_message": "Tidak ada kode pneumonia/efusi pleura ganda pada TB paru.",
+                "fail_message": "Pneumonia (J15.-/J18.-) dan efusi pleura (J90) sudah termasuk dalam A16.-; hapus kode tersebut.",
+                "action_on_fail": "suggest_remove",
+                "suggest_codes": [
+                    "A16.*"
+                ]
+            },
+            "source": {
+                "document": "ICD-10",
+                "reference": "Catatan pada A16",
+                "origin_note": "rule_ba_2019.pdf, Pneumonia dan Efusi Pleura pada TB Paru",
+                "verified_against_original": false,
+                "verification_note": "BA hlm. 1 & 4 (OCR): pneumonia TB sudah termasuk A16.2. Efusi pleura tidak ditemukan di OCR; cek manual."
+            }
+        },
+        {
+            "id": "RJ-THALASEMIA_KELASI_BESI",
+            "title": "Thalasemia mayor dengan kelasi besi (D56.1)",
+            "type": "administrative",
+            "scope": "RJ",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "D56.1"
+                ],
+                "position": "primary"
+            },
+            "extra_conditions": {
+                "all": [
+                    {
+                        "label": "Mendapat obat kelasi besi",
+                        "field": "therapy.drugs",
+                        "op": "contains_any",
+                        "value": [
+                            "deferipone",
+                            "deferoksamin",
+                            "deferasirox"
+                        ],
+                        "on_missing": "fail"
+                    },
+                    {
+                        "label": "Klaim top up kelasi besi baru 1x dalam bulan ini",
+                        "field": "history.iron_chelation_claims_this_month",
+                        "op": "lte",
+                        "value": 1,
+                        "on_missing": "review"
+                    }
+                ]
+            },
+            "required_documents": [
+                "protokol_pemberian_kelasi_besi",
+                "product_batch_obat"
+            ],
+            "outcome": {
+                "pass_message": "D56.1 sebagai diagnosis utama sesuai; top up special drugs didukung dokumen.",
+                "fail_message": "Syarat D56.1/top up tidak terpenuhi (obat kelasi besi, dokumen, atau frekuensi >1x/bulan).",
+                "action_on_fail": "request_document"
+            },
+            "source": {
+                "document": "BA Kesepakatan Pending Klaim; Permenkes 52/2016",
+                "year": 2019,
+                "reference": "BA hlm. 8 (butir 43)",
+                "origin_note": "rule_ba_2019.pdf, D56 Beta Thalassemia",
+                "verified_against_original": true,
+                "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final. D56.1 utama, kelasi besi, product batch obat, 1x/bulan (Permenkes 52/2016) cocok."
+            }
+        },
+        {
+            "id": "RI-PNEUMONIA",
+            "title": "Pneumonia (J12-J18)",
+            "type": "clinical_validation",
+            "scope": "RI",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "J12.*",
+                    "J13.*",
+                    "J14.*",
+                    "J15.*",
+                    "J16.*",
+                    "J17.*",
+                    "J18.*"
+                ]
+            },
+            "evidence": {
+                "all": [
+                    {
+                        "label": "Infiltrat baru/progresif pada foto toraks/CT/MRI",
+                        "field": "imaging.thorax_infiltrat_baru",
+                        "op": "eq",
+                        "value": true
+                    },
+                    {
+                        "label": "Minimal 2 gejala/tanda",
+                        "at_least": {
+                            "n": 2,
+                            "of": [
+                                {
+                                    "label": "Batuk bertambah",
+                                    "field": "symptom.batuk_bertambah",
+                                    "op": "eq",
+                                    "value": true
+                                },
+                                {
+                                    "label": "Dahak berubah/purulen",
+                                    "field": "symptom.dahak_purulen",
+                                    "op": "eq",
+                                    "value": true
+                                },
+                                {
+                                    "label": "Suhu >38 C atau riwayat demam",
+                                    "field": "symptom.demam",
+                                    "op": "eq",
+                                    "value": true
+                                },
+                                {
+                                    "label": "Konsolidasi/napas bronkial/ronki",
+                                    "field": "exam.konsolidasi_ronki",
+                                    "op": "eq",
+                                    "value": true
+                                },
+                                {
+                                    "label": "Leukosit >10.000 atau <4.500",
+                                    "any": [
+                                        {
+                                            "field": "lab.leukosit",
+                                            "op": "gt",
+                                            "value": 10000,
+                                            "unit": "/uL"
+                                        },
+                                        {
+                                            "field": "lab.leukosit",
+                                            "op": "lt",
+                                            "value": 4500,
+                                            "unit": "/uL"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "treatment": {
+                "label": "Ada terapi/tata laksana pneumonia",
+                "field": "therapy.pneumonia_management",
+                "op": "exists",
+                "on_missing": "fail"
+            },
+            "required_documents": [
+                "hasil_imaging_thorax",
+                "resume_medis"
+            ],
+            "outcome": {
+                "pass_message": "Kriteria pneumonia (KMK 514/2015) terpenuhi dan ada tata laksana.",
+                "fail_message": "Pneumonia tidak didukung: infiltrat baru, minimal 2 gejala, atau tata laksana tidak terpenuhi.",
+                "action_on_fail": "flag",
+                "severity": "error",
+                "review_message": "Data pendukung pneumonia belum lengkap; perlu review manual."
+            },
+            "source": {
+                "document": "BA Kesepakatan Pending Klaim",
+                "reference": "BA hlm. 36 (butir 3)",
+                "origin_note": "rule_ba_2019.pdf, Pneumonia",
+                "verified_against_original": true,
+                "verification_note": "Dicek visual hlm. 36: kriteria cocok.",
+                "year": 2019
+            },
+            "open_questions": [
+                "rule_ba_2019.pdf menyebut hasil mikrobiologi bakteremia pada pasien dewasa; BA hlm. 36 tidak mensyaratkannya, jadi tidak dijadikan kriteria wajib.",
+                "Jenis 'tata laksana pneumonia' tidak didefinisikan di BA; perlu definisi klinis untuk ekstraksi.",
+                "Pneumonia pada TB paru (A16) ditangani aturan RJ-TB_PARU_EKSKLUSI."
+            ]
+        },
+        {
+            "id": "RI-GAGAL_NAPAS_KRONIS",
+            "title": "Gagal napas kronis (J96.1)",
+            "type": "clinical_validation",
+            "scope": "RI",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "J96.1"
+                ]
+            },
+            "evidence": {
+                "label": "Seluruh kriteria BGA",
+                "all": [
+                    {
+                        "label": "pCO2 >50",
+                        "field": "bga.pco2",
+                        "op": "gt",
+                        "value": 50,
+                        "unit": "mmHg"
+                    },
+                    {
+                        "label": "HCO3 >24",
+                        "field": "bga.hco3",
+                        "op": "gt",
+                        "value": 24,
+                        "unit": "mmol/L"
+                    },
+                    {
+                        "label": "pH normal 7,35-7,45",
+                        "field": "bga.ph",
+                        "op": "between",
+                        "value": [
+                            7.35,
+                            7.45
+                        ]
+                    },
+                    {
+                        "label": "pO2 <60 dan/atau SaO2 <91",
+                        "any": [
+                            {
+                                "field": "bga.po2",
+                                "op": "lt",
+                                "value": 60,
+                                "unit": "mmHg"
+                            },
+                            {
+                                "field": "bga.sao2",
+                                "op": "lt",
+                                "value": 91,
+                                "unit": "%"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "treatment": {
+                "label": "Salah satu tata laksana gagal napas",
+                "field": "therapy.respiratory_support",
+                "op": "contains_any",
+                "value": [
+                    "nasal_kanul",
+                    "simple_mask",
+                    "rebreathing_mask",
+                    "non_rebreathing_mask",
+                    "venturi_mask",
+                    "high_flow_nasal_kanul",
+                    "cpap",
+                    "bipap",
+                    "ventilator_invasif"
+                ],
+                "on_missing": "fail"
+            },
+            "required_documents": [
+                "hasil_bga",
+                "resume_medis"
+            ],
+            "outcome": {
+                "pass_message": "Kriteria gagal napas kronis terpenuhi dan ada tata laksana.",
+                "fail_message": "J96.1 tidak didukung hasil BGA lengkap dan/atau tata laksana.",
+                "action_on_fail": "flag",
+                "severity": "error",
+                "review_message": "Data BGA belum lengkap; perlu review manual."
+            },
+            "source": {
+                "document": "BA Kesepakatan Pending Klaim",
+                "reference": "BA hlm. 39",
+                "origin_note": "rule_ba_2019.pdf, Respiratory Failure Kronis",
+                "verified_against_original": true,
+                "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final.",
+                "year": 2019
+            },
+            "open_questions": [
+                "Keempat kriteria BGA idealnya dari satu pengambilan sampel; engine saat ini menilai tiap kriteria terpisah (aggregate=any).",
+                "BA menulis satuan HCO3 'mmHg' (kemungkinan salah ketik); diasumsikan mmol/L."
+            ]
+        },
+        {
+            "id": "RI-INFARK_CEREBRI",
+            "title": "Infark cerebri (I63.-)",
+            "type": "clinical_validation",
+            "scope": "RI",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "I63.*"
+                ]
+            },
+            "evidence": {
+                "label": "CT scan menunjukkan infark",
+                "field": "imaging.ct_infark",
+                "op": "eq",
+                "value": true
+            },
+            "required_documents": [
+                "hasil_ct_scan"
+            ],
+            "outcome": {
+                "pass_message": "Infark pada CT scan mendukung I63.-.",
+                "fail_message": "I63.- tidak didukung hasil CT scan (+) infark; periksa kode stroke lain (I61.-, I64).",
+                "action_on_fail": "flag",
+                "severity": "error",
+                "review_message": "Hasil CT scan belum terbaca/ada; perlu review manual.",
+                "suggest_codes": [
+                    "I61.*",
+                    "I64"
+                ]
+            },
+            "source": {
+                "document": "BA Kesepakatan Pending Klaim",
+                "reference": "BA hlm. 14 (butir 74)",
+                "origin_note": "rule_ba_2019.pdf, Infark Cerebri",
+                "verified_against_original": true,
+                "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final.",
+                "year": 2019
+            },
+            "open_questions": [
+                "Kode saran (I61.-, I64) adalah usulan; BA hanya menyebut I63.- bila CT scan (+) infark."
+            ]
+        },
+        {
+            "id": "RI-ABSES_HATI",
+            "title": "Abses hati (K75.0)",
+            "type": "clinical_validation",
+            "scope": "RI",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "K75.0"
+                ]
+            },
+            "evidence": {
+                "label": "USG/CT: kesimpulan abses hati",
+                "field": "imaging.hepar_abses",
+                "op": "eq",
+                "value": true
+            },
+            "required_documents": [
+                "hasil_usg_atau_ct"
+            ],
+            "outcome": {
+                "pass_message": "Bacaan abses hati pada USG/CT mendukung K75.0.",
+                "fail_message": "K75.0 tidak didukung kesimpulan abses hati pada USG/CT.",
+                "action_on_fail": "flag",
+                "severity": "error",
+                "review_message": "Hasil USG/CT belum terbaca/ada; perlu review manual."
+            },
+            "source": {
+                "document": "BA Kesepakatan Pending Klaim",
+                "reference": "?",
+                "origin_note": "rule_ba_2019.pdf, Abses Hati",
+                "verified_against_original": false,
+                "verification_note": "Tidak ditemukan di OCR BA; cek manual apakah aturan ini dari BA atau sumber lain.",
+                "year": 2019
+            }
+        },
+        {
+            "id": "RI-ANEMIA_D64_9",
+            "title": "Anemia (D64.9) sebagai diagnosis sekunder",
+            "type": "clinical_validation",
+            "scope": "RI",
+            "status": "needs_clarification",
+            "trigger": {
+                "codes": [
+                    "D64.9"
+                ],
+                "position": "secondary"
+            },
+            "evidence": {
+                "label": "Hb <8",
+                "field": "lab.hb",
+                "op": "lt",
+                "value": 8,
+                "unit": "g/dL",
+                "aggregate": "min"
+            },
+            "treatment": {
+                "label": "Mendapat transfusi darah",
+                "field": "therapy.transfusi_darah",
+                "op": "eq",
+                "value": true,
+                "on_missing": "fail"
+            },
+            "required_documents": [
+                "hasil_lab",
+                "resume_medis"
+            ],
+            "outcome": {
+                "pass_message": "Hb <8 dan mendapat transfusi; mendukung D64.9.",
+                "fail_message": "D64.9 tidak didukung (Hb <8 dan transfusi darah).",
+                "action_on_fail": "flag",
+                "severity": "error",
+                "review_message": "Data Hb/transfusi belum lengkap; perlu review manual."
+            },
+            "source": {
+                "document": "BA Kesepakatan Pending Klaim",
+                "reference": "BA hlm. 38",
+                "origin_note": "rule_ba_2019.pdf, Anemia (RI)",
+                "verified_against_original": true,
+                "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final.",
+                "year": 2019
+            },
+            "open_questions": [
+                "BA hlm. 38 memuat dua jalur terpisah: (1) komplikasi penyakit utama yang memerlukan transfusi dan eritropoetin, (2) anemia gravis Hb <8 pada penyakit kronik. rule_ba_2019.pdf menggabungkan Hb <8 DAN transfusi, lebih ketat dari BA. Tetapkan logika (AND/OR) dan apakah eritropoetin dihitung."
+            ]
+        },
+        {
+            "id": "RI-ASITES",
+            "title": "Asites (R18)",
+            "type": "clinical_validation",
+            "scope": "RI",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "R18.*"
+                ]
+            },
+            "evidence": {
+                "label": "Asites masif",
+                "field": "clinical.asites_masif",
+                "op": "eq",
+                "value": true
+            },
+            "treatment": {
+                "label": "Pungsi asites terapeutik",
+                "field": "therapy.paracentesis_terapeutik",
+                "op": "eq",
+                "value": true,
+                "on_missing": "fail"
+            },
+            "required_documents": [
+                "resume_medis"
+            ],
+            "outcome": {
+                "pass_message": "Asites masif dengan pungsi terapeutik mendukung R18.",
+                "fail_message": "R18 tidak didukung tindakan pungsi terapeutik/asites masif.",
+                "action_on_fail": "flag",
+                "severity": "error",
+                "review_message": "Data asites/pungsi belum lengkap; perlu review manual."
+            },
+            "source": {
+                "document": "BA Kesepakatan Pending Klaim",
+                "reference": "BA hlm. 41",
+                "origin_note": "rule_ba_2019.pdf, Ascites",
+                "verified_against_original": true,
+                "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final.",
+                "year": 2019
+            },
+            "open_questions": [
+                "BA: pada kasus CKD, asites dapat menjadi diagnosis sekunder dengan diagnosis utama CKD; belum dimodelkan.",
+                "rule_ba_2019.pdf hanya mensyaratkan tindakan pungsi; 'asites masif' ditambahkan dari teks BA dan bila datanya tidak ada hasilnya REVIEW."
+            ]
+        },
+        {
+            "id": "RI-EFUSI_PLEURA",
+            "title": "Efusi pleura (J90-J91) sebagai diagnosis sekunder",
+            "type": "clinical_validation",
+            "scope": "RI",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "J90.*",
+                    "J91.*"
+                ],
+                "position": "secondary"
+            },
+            "evidence": {
+                "label": "Salah satu jalur BA",
+                "any": [
+                    {
+                        "label": "Pungsi pleura/torakosentesis dengan cairan terbukti",
+                        "all": [
+                            {
+                                "field": "therapy.pungsi_pleura",
+                                "op": "eq",
+                                "value": true
+                            },
+                            {
+                                "field": "therapy.pungsi_pleura_cairan_ditemukan",
+                                "op": "eq",
+                                "value": true
+                            }
+                        ]
+                    },
+                    {
+                        "label": "Imaging menunjukkan efusi + pungsi pleura dan/atau tata laksana tambahan",
+                        "all": [
+                            {
+                                "field": "imaging.efusi_pleura",
+                                "op": "eq",
+                                "value": true
+                            },
+                            {
+                                "any": [
+                                    {
+                                        "field": "therapy.pungsi_pleura",
+                                        "op": "eq",
+                                        "value": true
+                                    },
+                                    {
+                                        "field": "therapy.efusi_tatalaksana_tambahan",
+                                        "op": "eq",
+                                        "value": true
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            "required_documents": [
+                "resume_medis"
+            ],
+            "outcome": {
+                "pass_message": "Kriteria efusi pleura sebagai diagnosis sekunder terpenuhi.",
+                "fail_message": "J90/J91 sekunder tidak didukung pungsi pleura atau imaging + tata laksana tambahan.",
+                "action_on_fail": "flag",
+                "severity": "error",
+                "review_message": "Data efusi pleura belum lengkap; perlu review manual."
+            },
+            "source": {
+                "document": "BA Kesepakatan Pending Klaim",
+                "reference": "BA hlm. 38 (butir 16)",
+                "origin_note": "rule_ba_2019.pdf no. 1 (bagian kosong); diisi dari teks BA",
+                "verified_against_original": true,
+                "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final.",
+                "year": 2019
+            },
+            "open_questions": [
+                "Bagian Efusi Pleura di rule_ba_2019.pdf kosong; kriteria diambil dari BA. Efusi 'minimal' (<10 mm / <100 ml) dan lebih dari minimal sama-sama diterima, jadi tidak dievaluasi terpisah."
+            ]
+        },
+        {
+            "id": "RI-PROSEDUR_OPERASI",
+            "title": "Kesesuaian kode prosedur operasi dengan laporan operasi",
+            "type": "code_selection",
+            "scope": "RI",
+            "status": "draft",
+            "trigger": {
+                "codes": [
+                    "*"
+                ],
+                "code_system": "ICD9CM"
+            },
+            "evidence": {
+                "all": [
+                    {
+                        "label": "Kolom no.6 laporan operasi terisi",
+                        "field": "operation.procedure_performed_text",
+                        "op": "exists"
+                    },
+                    {
+                        "label": "Kolom no.7 laporan operasi terisi",
+                        "field": "operation.name_text",
+                        "op": "exists"
+                    },
+                    {
+                        "label": "Kode prosedur sesuai nama tindakan di laporan operasi",
+                        "field": "operation.coded_procedure_consistent",
+                        "op": "eq",
+                        "value": true
+                    }
+                ]
+            },
+            "required_documents": [
+                "laporan_operasi"
+            ],
+            "outcome": {
+                "pass_message": "Kode prosedur sesuai dengan yang dikerjakan operator.",
+                "fail_message": "Kode prosedur tidak sesuai dengan nama tindakan di laporan operasi.",
+                "action_on_fail": "flag",
+                "severity": "error",
+                "review_message": "Kesesuaian kode belum bisa dinilai otomatis; perlu review koder."
+            },
+            "source": {
+                "document": "Panduan verifikasi (rule_ba_2019.pdf)",
+                "reference": "no. 6",
+                "origin_note": "rule_ba_2019.pdf, Prosedur Tindakan Operasi",
+                "verified_against_original": false,
+                "verification_note": "Bersifat prosedur verifikasi, bukan pasal BA."
+            },
+            "open_questions": [
+                "Butuh langkah pencocokan: kamus nama tindakan -> kode ICD-9-CM untuk mengisi operation.coded_procedure_consistent. Belum dibuat; tanpa itu hasilnya selalu REVIEW.",
+                "Diagnosis tambahan yang ditemukan saat operasi (operation.intraop_diagnosis_text) belum dievaluasi; sebaiknya jadi temuan informasional terpisah."
+            ]
+        },
+        {
+            "id": "RJ-KEMOTERAPI_Z51_1",
+            "title": "Sesi kemoterapi (Z51.1) sebagai diagnosis utama",
+            "type": "code_selection",
+            "scope": "RJ",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "Z51.1"
+                ],
+                "position": "primary"
+            },
+            "violation_when": {
+                "any": [
+                    {
+                        "label": "Kemoterapi oral tetapi kode neoplasma ikut dikode",
+                        "all": [
+                            {
+                                "field": "therapy.kemoterapi",
+                                "op": "eq",
+                                "value": "oral"
+                            },
+                            {
+                                "field": "claim.diagnoses",
+                                "op": "has_code",
+                                "value": [
+                                    "C*",
+                                    "D0*",
+                                    "D1*",
+                                    "D2*",
+                                    "D3*",
+                                    "D4[0-8]*"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "label": "Kemoterapi injeksi tetapi kode neoplasma tidak dikode sebagai diagnosis sekunder",
+                        "all": [
+                            {
+                                "field": "therapy.kemoterapi",
+                                "op": "eq",
+                                "value": "injeksi"
+                            },
+                            {
+                                "field": "claim.diagnoses",
+                                "op": "not_has_code",
+                                "value": [
+                                    "C*",
+                                    "D0*",
+                                    "D1*",
+                                    "D2*",
+                                    "D3*",
+                                    "D4[0-8]*"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            "required_documents": [
+                "laporan_kemoterapi"
+            ],
+            "outcome": {
+                "pass_message": "Koding Z51.1 sesuai jenis kemoterapi dan dilengkapi laporan kemoterapi.",
+                "fail_message": "Koding neoplasma tidak sesuai jenis kemoterapi (oral: tanpa kode neoplasma; injeksi: dengan kode neoplasma sekunder).",
+                "action_on_fail": "flag",
+                "severity": "error",
+                "review_message": "Jenis kemoterapi belum diketahui; perlu review manual."
+            },
+            "source": {
+                "document": "Permenkes 26/2021 (sebagaimana dikutip rule_ba_2019.pdf)",
+                "reference": "-",
+                "origin_note": "rule_ba_2019.pdf, Z51.1",
+                "verified_against_original": false,
+                "verification_note": "TIDAK COCOK dengan BA 2019 hlm. 27 butir 151 (dicek visual): kemoterapi oral -> Z51.1 utama DAN kode neoplasma sebagai diagnosis sekunder.",
+                "year": 2021
+            },
+            "open_questions": [
+                "Untuk kemoterapi oral, BA 2019 meminta neoplasma sebagai diagnosis sekunder, sedangkan rule_ba_2019.pdf (Permenkes 26/2021) melarangnya. Tetapkan regulasi yang berlaku untuk tanggal klaim; bila perlu pakai effective_from/effective_to.",
+                "BA butir 152: terapi adjuvan bukan bagian episode kemoterapi (tidak boleh Z51.1); belum dimodelkan.",
+                "Pola kode neoplasma (C*, D0*-D3*, D40-D48) adalah usulan."
+            ]
+        },
+        {
+            "id": "RJ-KONTROL_Z09_0",
+            "title": "Kontrol ulang (Z09.0) sebagai diagnosis utama",
+            "type": "administrative",
+            "scope": "RJ",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "Z09.0"
+                ],
+                "position": "primary"
+            },
+            "extra_conditions": {
+                "all": [
+                    {
+                        "label": "Kontrol ulang untuk diagnosis yang sama",
+                        "field": "history.prior_visit_same_dx",
+                        "op": "eq",
+                        "value": true
+                    },
+                    {
+                        "label": "Bukan kontrol ulang kondisi neoplasma",
+                        "field": "claim.diagnoses",
+                        "op": "not_has_code",
+                        "value": [
+                            "C*",
+                            "D0*",
+                            "D1*",
+                            "D2*",
+                            "D3*",
+                            "D4[0-8]*"
+                        ]
+                    },
+                    {
+                        "label": "Bukan bayi <7 hari",
+                        "field": "patient.age_days",
+                        "op": "gte",
+                        "value": 7,
+                        "unit": "hari"
+                    },
+                    {
+                        "label": "Post operasi tanpa angkat jahitan",
+                        "not": {
+                            "field": "history.post_op_suture_removal",
+                            "op": "eq",
+                            "value": true
+                        }
+                    },
+                    {
+                        "label": "Tidak ada tindakan operatif ODC",
+                        "not": {
+                            "field": "procedure.odc_operatif",
+                            "op": "eq",
+                            "value": true
+                        }
+                    },
+                    {
+                        "label": "Ada terapi/tata laksana selain asesmen dan konsultasi",
+                        "field": "billing.has_therapy_beyond_consult",
+                        "op": "eq",
+                        "value": true
+                    }
+                ]
+            },
+            "required_documents": [
+                "resume_medis",
+                "billing"
+            ],
+            "outcome": {
+                "pass_message": "Z09.0 sebagai diagnosis utama sesuai kondisi pasien dan tata laksana.",
+                "fail_message": "Z09.0 sebagai diagnosis utama tidak memenuhi syarat kontrol ulang.",
+                "action_on_fail": "flag",
+                "severity": "error",
+                "review_message": "Data kunjungan/billing belum lengkap; perlu review manual."
+            },
+            "source": {
+                "document": "Permenkes 26/2021 (sebagaimana dikutip rule_ba_2019.pdf)",
+                "reference": "-",
+                "origin_note": "rule_ba_2019.pdf, Z09.0",
+                "verified_against_original": false,
+                "verification_note": "Tidak ditemukan di OCR BA (BA hanya membahas Z09.8/Z09.4).",
+                "year": 2021
+            },
+            "open_questions": [
+                "Syarat 'post operasi tanpa angkat jahitan' ditafsirkan sebagai: kunjungan bukan angkat jahitan.",
+                "rule_ba_2019.pdf tidak menyebut hasil bila syarat gagal (mis. kode pengganti)."
+            ]
+        },
+        {
+            "id": "RJ-ENDOSKOPI",
+            "title": "Kode endoskopi sesuai regio (hidung 21.21, sinus 22.19)",
+            "type": "code_selection",
+            "scope": "ALL",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "21.21",
+                    "22.19"
+                ],
+                "code_system": "ICD9CM"
+            },
+            "evidence": {
+                "any": [
+                    {
+                        "label": "Hidung dengan 21.21",
+                        "all": [
+                            {
+                                "field": "procedure.endoscopy_region",
+                                "op": "eq",
+                                "value": "hidung"
+                            },
+                            {
+                                "field": "claim.procedures",
+                                "op": "has_code",
+                                "value": "21.21"
+                            }
+                        ]
+                    },
+                    {
+                        "label": "Sinus dengan 22.19",
+                        "all": [
+                            {
+                                "field": "procedure.endoscopy_region",
+                                "op": "eq",
+                                "value": "sinus"
+                            },
+                            {
+                                "field": "claim.procedures",
+                                "op": "has_code",
+                                "value": "22.19"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "outcome": {
+                "pass_message": "Kode endoskopi sesuai regio yang dikerjakan.",
+                "fail_message": "Kode endoskopi tidak sesuai regio (hidung 21.21, sinus 22.19).",
+                "action_on_fail": "suggest_replace",
+                "severity": "error",
+                "review_message": "Regio endoskopi belum diketahui; perlu review manual.",
+                "suggest_codes": [
+                    "21.21",
+                    "22.19"
+                ]
+            },
+            "source": {
+                "document": "Utilization Review Agustus 2026 (per rule_ba_2019.pdf)",
+                "reference": "-",
+                "origin_note": "rule_ba_2019.pdf, Endoscopy",
+                "verified_against_original": false,
+                "verification_note": "Bukan dari BA 2019.",
+                "year": 2026
+            },
+            "open_questions": [
+                "Aturan hanya terpicu bila 21.21 atau 22.19 sudah dikode; endoskopi yang dikode dengan kode lain tidak tertangkap."
+            ]
+        },
+        {
+            "id": "RJ-REHABILITASI_Z50",
+            "title": "Rehabilitasi (Z50.-) sesuai jenis rehabilitasi",
+            "type": "code_selection",
+            "scope": "ALL",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "Z50.*"
+                ],
+                "position": "primary"
+            },
+            "evidence": {
+                "any": [
+                    {
+                        "label": "Kardiak: Z50.0",
+                        "all": [
+                            {
+                                "field": "therapy.rehabilitasi",
+                                "op": "eq",
+                                "value": "kardiak"
+                            },
+                            {
+                                "field": "claim.diagnoses",
+                                "op": "has_code",
+                                "value": "Z50.0"
+                            }
+                        ]
+                    },
+                    {
+                        "label": "Terapi fisik: Z50.1",
+                        "all": [
+                            {
+                                "field": "therapy.rehabilitasi",
+                                "op": "eq",
+                                "value": "fisik"
+                            },
+                            {
+                                "field": "claim.diagnoses",
+                                "op": "has_code",
+                                "value": "Z50.1"
+                            }
+                        ]
+                    },
+                    {
+                        "label": "Terapi wicara: Z50.5",
+                        "all": [
+                            {
+                                "field": "therapy.rehabilitasi",
+                                "op": "eq",
+                                "value": "wicara"
+                            },
+                            {
+                                "field": "claim.diagnoses",
+                                "op": "has_code",
+                                "value": "Z50.5"
+                            }
+                        ]
+                    },
+                    {
+                        "label": "Okupasi: Z50.7",
+                        "all": [
+                            {
+                                "field": "therapy.rehabilitasi",
+                                "op": "eq",
+                                "value": "okupasi"
+                            },
+                            {
+                                "field": "claim.diagnoses",
+                                "op": "has_code",
+                                "value": "Z50.7"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "outcome": {
+                "pass_message": "Kode Z50.- sesuai jenis rehabilitasi yang dilakukan.",
+                "fail_message": "Kode Z50.- tidak sesuai jenis rehabilitasi atau rehabilitasi tidak terdokumentasi.",
+                "action_on_fail": "flag",
+                "severity": "error",
+                "review_message": "Jenis rehabilitasi belum diketahui; perlu review manual.",
+                "suggest_codes": [
+                    "Z50.0",
+                    "Z50.1",
+                    "Z50.5",
+                    "Z50.7"
+                ]
+            },
+            "source": {
+                "document": "ICD-10 (per rule_ba_2019.pdf)",
+                "reference": "Z50.-",
+                "origin_note": "rule_ba_2019.pdf, Rehabilitasi",
+                "verified_against_original": false,
+                "verification_note": "Bukan dari BA 2019 (BA hanya membahas rehabilitasi psikososial)."
+            }
+        },
+        {
+            "id": "RJ-ANEMIA_NEOPLASMA",
+            "title": "Anemia pada neoplasma: gunakan D63.0",
+            "type": "code_selection",
+            "scope": "ALL",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "D64.9"
+                ]
+            },
+            "violation_when": {
+                "label": "Ada kode neoplasma",
+                "field": "claim.diagnoses",
+                "op": "has_code",
+                "value": [
+                    "C*",
+                    "D0*",
+                    "D1*",
+                    "D2*",
+                    "D3*",
+                    "D4[0-8]*"
+                ]
+            },
+            "outcome": {
+                "pass_message": "Pemilihan kode anemia sesuai kondisi penyerta.",
+                "fail_message": "D64.9 sebaiknya diganti kode anemia khusus: D63.0.",
+                "action_on_fail": "suggest_replace",
+                "severity": "warning",
+                "suggest_codes": [
+                    "D63.0"
+                ]
+            },
+            "source": {
+                "document": "BA Kesepakatan Pending Klaim",
+                "reference": "BA hlm. 8 (butir anemia); ICD-10",
+                "origin_note": "rule_ba_2019.pdf, Anemia (RJ)",
+                "verified_against_original": true,
+                "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final. Anemia pada keganasan -> D63.0.",
+                "year": 2019
+            }
+        },
+        {
+            "id": "RJ-ANEMIA_PENYAKIT_KRONIS",
+            "title": "Anemia pada penyakit kronis (CKD): gunakan D63.8",
+            "type": "code_selection",
+            "scope": "ALL",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "D64.9"
+                ]
+            },
+            "violation_when": {
+                "label": "Ada CKD (N18.-)",
+                "field": "claim.diagnoses",
+                "op": "has_code",
+                "value": "N18.*"
+            },
+            "outcome": {
+                "pass_message": "Pemilihan kode anemia sesuai kondisi penyerta.",
+                "fail_message": "D64.9 sebaiknya diganti kode anemia khusus: D63.8.",
+                "action_on_fail": "suggest_replace",
+                "severity": "warning",
+                "suggest_codes": [
+                    "D63.8"
+                ]
+            },
+            "source": {
+                "document": "BA Kesepakatan Pending Klaim",
+                "reference": "BA hlm. 8 (butir anemia); ICD-10",
+                "origin_note": "rule_ba_2019.pdf, Anemia (RJ)",
+                "verified_against_original": true,
+                "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final. Anemia pada penyakit kronis -> D63.8; saat ini hanya CKD yang dideteksi.",
+                "year": 2019
+            }
+        },
+        {
+            "id": "RJ-ANEMIA_PERDARAHAN",
+            "title": "Anemia akibat perdarahan akut: gunakan D62",
+            "type": "code_selection",
+            "scope": "ALL",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "D64.9"
+                ]
+            },
+            "violation_when": {
+                "label": "Perdarahan akut terdokumentasi",
+                "field": "clinical.perdarahan_akut",
+                "op": "eq",
+                "value": true
+            },
+            "outcome": {
+                "pass_message": "Pemilihan kode anemia sesuai kondisi penyerta.",
+                "fail_message": "D64.9 sebaiknya diganti kode anemia khusus: D62.",
+                "action_on_fail": "suggest_replace",
+                "severity": "warning",
+                "suggest_codes": [
+                    "D62"
+                ]
+            },
+            "source": {
+                "document": "BA Kesepakatan Pending Klaim",
+                "reference": "BA hlm. 8 (butir anemia); ICD-10",
+                "origin_note": "rule_ba_2019.pdf, Anemia (RJ)",
+                "verified_against_original": true,
+                "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final. Anemia perdarahan akut -> D62.",
+                "year": 2019
+            }
+        },
+        {
+            "id": "RJ-KELOID",
+            "title": "Keloid (L91.0): fungsi vs estetika",
+            "type": "administrative",
+            "scope": "ALL",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "L91.0"
+                ]
+            },
+            "evidence": {
+                "label": "Keloid menyebabkan gangguan fungsi tubuh",
+                "field": "clinical.keloid_gangguan_fungsi",
+                "op": "eq",
+                "value": true
+            },
+            "required_documents": [
+                "resume_medis"
+            ],
+            "outcome": {
+                "pass_message": "Keloid terbukti mengganggu fungsi; layanan dijamin.",
+                "fail_message": "Keloid hanya bertujuan estetika; kode L91.0 dihapus (tidak dijamin, Perpres 82/2018 Pasal 52 ayat 1 huruf f).",
+                "action_on_fail": "suggest_remove",
+                "severity": "error",
+                "review_message": "Fungsi/estetika belum jelas; perlu review manual."
+            },
+            "source": {
+                "document": "Perpres 82/2018 Pasal 52 ayat 1 huruf f (per rule_ba_2019.pdf)",
+                "reference": "Pasal 52 (1) f",
+                "origin_note": "rule_ba_2019.pdf, Keloid",
+                "verified_against_original": false,
+                "verification_note": "Perpres tidak ada di file proyek. BA hlm. 37 memuat prinsip serupa untuk skin graft estetik.",
+                "year": 2018
+            },
+            "open_questions": [
+                "Definisi 'gangguan fungsi' (nyeri, gatal berat, kontraktur, gangguan gerak) perlu ditetapkan klinisi untuk ekstraksi."
+            ]
+        },
+        {
+            "id": "RJ-MRI",
+            "title": "Kode MRI sesuai regio (88.91-88.95)",
+            "type": "code_selection",
+            "scope": "ALL",
+            "status": "active",
+            "trigger": {
+                "codes": [
+                    "88.91",
+                    "88.92",
+                    "88.93",
+                    "88.94",
+                    "88.95"
+                ],
+                "code_system": "ICD9CM"
+            },
+            "evidence": {
+                "any": [
+                    {
+                        "label": "otak dengan 88.91",
+                        "all": [
+                            {
+                                "field": "procedure.mri_region",
+                                "op": "eq",
+                                "value": "otak"
+                            },
+                            {
+                                "field": "claim.procedures",
+                                "op": "has_code",
+                                "value": "88.91"
+                            }
+                        ]
+                    },
+                    {
+                        "label": "dada_jantung dengan 88.92",
+                        "all": [
+                            {
+                                "field": "procedure.mri_region",
+                                "op": "eq",
+                                "value": "dada_jantung"
+                            },
+                            {
+                                "field": "claim.procedures",
+                                "op": "has_code",
+                                "value": "88.92"
+                            }
+                        ]
+                    },
+                    {
+                        "label": "tulang_belakang dengan 88.93",
+                        "all": [
+                            {
+                                "field": "procedure.mri_region",
+                                "op": "eq",
+                                "value": "tulang_belakang"
+                            },
+                            {
+                                "field": "claim.procedures",
+                                "op": "has_code",
+                                "value": "88.93"
+                            }
+                        ]
+                    },
+                    {
+                        "label": "muskuloskeletal dengan 88.94",
+                        "all": [
+                            {
+                                "field": "procedure.mri_region",
+                                "op": "eq",
+                                "value": "muskuloskeletal"
+                            },
+                            {
+                                "field": "claim.procedures",
+                                "op": "has_code",
+                                "value": "88.94"
+                            }
+                        ]
+                    },
+                    {
+                        "label": "pelvis_prostat_bladder dengan 88.95",
+                        "all": [
+                            {
+                                "field": "procedure.mri_region",
+                                "op": "eq",
+                                "value": "pelvis_prostat_bladder"
+                            },
+                            {
+                                "field": "claim.procedures",
+                                "op": "has_code",
+                                "value": "88.95"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "outcome": {
+                "pass_message": "Kode MRI sesuai regio yang dikerjakan.",
+                "fail_message": "Kode MRI tidak sesuai regio pemeriksaan.",
+                "action_on_fail": "suggest_replace",
+                "severity": "error",
+                "review_message": "Regio MRI belum diketahui; perlu review manual.",
+                "suggest_codes": [
+                    "88.91",
+                    "88.92",
+                    "88.93",
+                    "88.94",
+                    "88.95"
+                ]
+            },
+            "source": {
+                "document": "ICD-9-CM (per rule_ba_2019.pdf)",
+                "reference": "88.91-88.95",
+                "origin_note": "rule_ba_2019.pdf, MRI",
+                "verified_against_original": false,
+                "verification_note": "Tidak dicek terhadap BA."
+            },
+            "open_questions": [
+                "Aturan hanya terpicu bila salah satu kode 88.91-88.95 sudah dikode."
+            ]
+        }
+    ]
+}

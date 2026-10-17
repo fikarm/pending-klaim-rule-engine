@@ -1,0 +1,695 @@
+{
+    "catalog_version": "0.2",
+    "note": "Daftar field dibuat dari rule_ba_2019.pdf. Rentang wajar (plausible_range) dan nilai allowed_values yang bertanda 'usulan' perlu divalidasi tenaga klinis. Kolom db_source_hint sengaja kosong: isi sesuai tabel/kolom database Anda.",
+    "location_values": {
+        "claim_header": "ada di objek claim, bukan di facts",
+        "fact": "ada di array facts"
+    },
+    "fields": [
+        {
+            "path": "claim.encounter_type",
+            "location": "claim_header",
+            "kind": "category",
+            "allowed_values": [
+                "RI",
+                "RJ"
+            ],
+            "description": "Rawat inap / rawat jalan",
+            "needed_for": [
+                "semua aturan (scope)"
+            ]
+        },
+        {
+            "path": "claim.diagnoses",
+            "location": "claim_header",
+            "kind": "category_list",
+            "description": "Daftar diagnosis ICD-10 beserta posisi primer/sekunder",
+            "needed_for": [
+                "I11.0",
+                "A16.-",
+                "semua trigger aturan"
+            ]
+        },
+        {
+            "path": "claim.procedures",
+            "location": "claim_header",
+            "kind": "category_list",
+            "description": "Daftar prosedur ICD-9-CM",
+            "needed_for": [
+                "MRI 88.9x",
+                "Endoskopi 21.21/22.19",
+                "operasi"
+            ]
+        },
+        {
+            "path": "patient.age_days",
+            "location": "claim_header",
+            "kind": "measurement",
+            "unit": "hari",
+            "plausible_range": [
+                0,
+                45000
+            ],
+            "description": "Usia pasien dalam hari",
+            "needed_for": [
+                "Z09.0 (bayi <7 hari)"
+            ]
+        },
+        {
+            "path": "vital.suhu",
+            "location": "fact",
+            "kind": "measurement",
+            "unit": "C",
+            "plausible_range": [
+                30,
+                45
+            ],
+            "description": "Suhu tubuh (aksila)",
+            "needed_for": [
+                "Sepsis",
+                "Pneumonia"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "vital.nadi",
+            "location": "fact",
+            "kind": "measurement",
+            "unit": "x/menit",
+            "plausible_range": [
+                20,
+                250
+            ],
+            "description": "Denyut jantung",
+            "needed_for": [
+                "Sepsis"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "vital.rr",
+            "location": "fact",
+            "kind": "measurement",
+            "unit": "x/menit",
+            "plausible_range": [
+                4,
+                80
+            ],
+            "description": "Frekuensi napas",
+            "needed_for": [
+                "Sepsis"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "vital.spo2",
+            "location": "fact",
+            "kind": "measurement",
+            "unit": "%",
+            "plausible_range": [
+                40,
+                100
+            ],
+            "description": "Saturasi O2 pulse oksimetri",
+            "needed_for": [
+                "Gagal napas akut"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "lab.kalium",
+            "location": "fact",
+            "kind": "measurement",
+            "unit": "mmol/L",
+            "plausible_range": [
+                1.0,
+                9.0
+            ],
+            "description": "Kalium serum (mEq/L = mmol/L, faktor konversi 1)",
+            "needed_for": [
+                "E87.6 Hipokalemia"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "lab.hb",
+            "location": "fact",
+            "kind": "measurement",
+            "unit": "g/dL",
+            "plausible_range": [
+                1.0,
+                25.0
+            ],
+            "description": "Hemoglobin",
+            "needed_for": [
+                "Anemia D64.9"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "lab.leukosit",
+            "location": "fact",
+            "kind": "measurement",
+            "unit": "/uL",
+            "plausible_range": [
+                100,
+                500000
+            ],
+            "description": "Hitung leukosit (hati-hati satuan: ribu/uL vs /uL)",
+            "needed_for": [
+                "Pneumonia (>10.000 atau <4.500)",
+                "Sepsis"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "lab.leukosit_tinggi",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Leukositosis. Diturunkan dari lab.leukosit",
+            "derived_from": [
+                "lab.leukosit"
+            ],
+            "derivation": "lab.leukosit > ambang. Ambang untuk sepsis tidak disebut di BA; perlu ditetapkan klinisi.",
+            "needed_for": [
+                "Sepsis"
+            ]
+        },
+        {
+            "path": "lab.kultur_darah_positif",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Kultur darah/mikrobiologi dengan hasil bakteremia",
+            "needed_for": [
+                "Sepsis",
+                "Pneumonia (dewasa)"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "bga.po2",
+            "location": "fact",
+            "kind": "measurement",
+            "unit": "mmHg",
+            "plausible_range": [
+                20,
+                600
+            ],
+            "description": "pO2 analisis gas darah",
+            "needed_for": [
+                "Gagal napas akut/kronis"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "bga.pco2",
+            "location": "fact",
+            "kind": "measurement",
+            "unit": "mmHg",
+            "plausible_range": [
+                10,
+                150
+            ],
+            "description": "pCO2 analisis gas darah",
+            "needed_for": [
+                "Sepsis (<32)",
+                "Gagal napas akut/kronis"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "bga.ph",
+            "location": "fact",
+            "kind": "measurement",
+            "unit": "pH",
+            "plausible_range": [
+                6.7,
+                7.8
+            ],
+            "description": "pH darah arteri",
+            "needed_for": [
+                "Gagal napas akut/kronis"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "bga.sao2",
+            "location": "fact",
+            "kind": "measurement",
+            "unit": "%",
+            "plausible_range": [
+                40,
+                100
+            ],
+            "description": "SaO2 dari BGA",
+            "needed_for": [
+                "Gagal napas akut/kronis"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "bga.hco3",
+            "location": "fact",
+            "kind": "measurement",
+            "unit": "mmol/L",
+            "plausible_range": [
+                5,
+                60
+            ],
+            "description": "Bikarbonat. Dokumen menulis 'mmHg' (kemungkinan salah ketik); diasumsikan mmol/L.",
+            "needed_for": [
+                "Gagal napas kronis (>24)"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "bga.fio2",
+            "location": "fact",
+            "kind": "measurement",
+            "unit": "fraction",
+            "plausible_range": [
+                0.21,
+                1.0
+            ],
+            "description": "FiO2 sebagai pecahan (21% = 0.21)",
+            "needed_for": [
+                "Gagal napas akut (P/F ratio)"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "bga.pf_ratio",
+            "location": "fact",
+            "kind": "measurement",
+            "unit": "ratio",
+            "plausible_range": [
+                20,
+                700
+            ],
+            "description": "P/F ratio",
+            "derived_from": [
+                "bga.po2",
+                "bga.fio2"
+            ],
+            "derivation": "bga.po2 / bga.fio2 pada waktu pengukuran yang sama",
+            "needed_for": [
+                "Gagal napas akut (<300)"
+            ]
+        },
+        {
+            "path": "bga.pco2_delta_from_baseline",
+            "location": "fact",
+            "kind": "measurement",
+            "unit": "mmHg",
+            "plausible_range": [
+                -100,
+                100
+            ],
+            "description": "Kenaikan pCO2 dari nilai dasar",
+            "derived_from": [
+                "bga.pco2"
+            ],
+            "derivation": "pCO2 terbaru dikurangi pCO2 BGA sebelumnya (jika ada)",
+            "needed_for": [
+                "Gagal napas akut"
+            ]
+        },
+        {
+            "path": "imaging.thorax_infiltrat_baru",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Infiltrat baru/progresif pada foto toraks, CT, atau MRI",
+            "needed_for": [
+                "Pneumonia"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "imaging.ct_infark",
+            "location": "fact",
+            "kind": "flag",
+            "description": "CT scan kepala menunjukkan infark",
+            "needed_for": [
+                "I63.- Infark cerebri"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "imaging.hepar_abses",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Kesimpulan USG/CT: abses hati",
+            "needed_for": [
+                "K75.0 Abses hati"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "procedure.mri_region",
+            "location": "fact",
+            "kind": "category",
+            "allowed_values": [
+                "otak",
+                "dada_jantung",
+                "tulang_belakang",
+                "muskuloskeletal",
+                "pelvis_prostat_bladder"
+            ],
+            "description": "Regio MRI yang dilakukan",
+            "needed_for": [
+                "MRI 88.91-88.95"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "procedure.endoscopy_region",
+            "location": "fact",
+            "kind": "category",
+            "allowed_values": [
+                "hidung",
+                "sinus"
+            ],
+            "description": "Regio endoskopi",
+            "needed_for": [
+                "Endoskopi 21.21 / 22.19"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "symptom.batuk_bertambah",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Batuk bertambah",
+            "needed_for": [
+                "Pneumonia"
+            ]
+        },
+        {
+            "path": "symptom.dahak_purulen",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Perubahan karakteristik dahak / purulen",
+            "needed_for": [
+                "Pneumonia"
+            ]
+        },
+        {
+            "path": "symptom.demam",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Suhu >38 C (aksila) atau riwayat demam",
+            "needed_for": [
+                "Pneumonia"
+            ]
+        },
+        {
+            "path": "exam.konsolidasi_ronki",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Pemeriksaan fisik: konsolidasi, suara napas bronkial, ronki",
+            "needed_for": [
+                "Pneumonia"
+            ]
+        },
+        {
+            "path": "clinical.asites_masif",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Asites masif",
+            "needed_for": [
+                "R18 Asites"
+            ]
+        },
+        {
+            "path": "therapy.drugs",
+            "location": "fact",
+            "kind": "category_list",
+            "description": "Konsep obat yang diberikan, dinormalisasi lewat dictionary (bukan nama dagang mentah)",
+            "allowed_values": [
+                "kcl_injeksi",
+                "deferipone",
+                "deferoksamin",
+                "deferasirox"
+            ],
+            "allowed_values_note": "Daftar ini baru mencakup obat yang disebut di aturan contoh; perluas lewat drug dictionary.",
+            "needed_for": [
+                "E87.6",
+                "D56.1",
+                "Kemoterapi"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "therapy.respiratory_support",
+            "location": "fact",
+            "kind": "category_list",
+            "allowed_values": [
+                "nasal_kanul",
+                "simple_mask",
+                "rebreathing_mask",
+                "non_rebreathing_mask",
+                "venturi_mask",
+                "high_flow_nasal_kanul",
+                "cpap",
+                "bipap",
+                "ventilator_invasif"
+            ],
+            "description": "Terapi oksigen/ventilasi",
+            "needed_for": [
+                "Gagal napas akut/kronis"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "therapy.transfusi_darah",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Mendapat transfusi darah",
+            "needed_for": [
+                "Anemia D64.9"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "therapy.sepsis_management",
+            "location": "fact",
+            "kind": "category_list",
+            "description": "Tata laksana sepsis. BA tidak merinci jenisnya; perlu definisi klinis (usulan: antibiotik IV, resusitasi cairan, vasopresor).",
+            "needed_for": [
+                "Sepsis"
+            ]
+        },
+        {
+            "path": "therapy.paracentesis_terapeutik",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Pungsi asites dengan tujuan terapeutik",
+            "needed_for": [
+                "R18 Asites"
+            ]
+        },
+        {
+            "path": "therapy.kemoterapi",
+            "location": "fact",
+            "kind": "category",
+            "allowed_values": [
+                "oral",
+                "injeksi"
+            ],
+            "description": "Jenis kemoterapi yang diberikan",
+            "needed_for": [
+                "Z51.1"
+            ]
+        },
+        {
+            "path": "therapy.rehabilitasi",
+            "location": "fact",
+            "kind": "category",
+            "allowed_values": [
+                "kardiak",
+                "fisik",
+                "wicara",
+                "okupasi"
+            ],
+            "description": "Jenis rehabilitasi",
+            "needed_for": [
+                "Z50.-"
+            ]
+        },
+        {
+            "path": "operation.procedure_performed_text",
+            "location": "fact",
+            "kind": "text",
+            "description": "Kolom no.6 laporan operasi: deskripsi/uraian operasi",
+            "needed_for": [
+                "Koding prosedur operasi"
+            ]
+        },
+        {
+            "path": "operation.name_text",
+            "location": "fact",
+            "kind": "text",
+            "description": "Kolom no.7 laporan operasi: nama operasi yang dikerjakan",
+            "needed_for": [
+                "Koding prosedur operasi"
+            ]
+        },
+        {
+            "path": "operation.intraop_diagnosis_text",
+            "location": "fact",
+            "kind": "text",
+            "description": "Diagnosis tambahan yang ditemukan saat operasi",
+            "needed_for": [
+                "Koding prosedur operasi"
+            ]
+        },
+        {
+            "path": "history.iron_chelation_claims_this_month",
+            "location": "fact",
+            "kind": "measurement",
+            "unit": "count",
+            "plausible_range": [
+                0,
+                31
+            ],
+            "description": "Jumlah klaim top up kelasi besi pasien pada bulan kunjungan (lintas kunjungan)",
+            "derived_from": [],
+            "derivation": "Query riwayat klaim pasien; bukan dari dokumen klinis tunggal",
+            "needed_for": [
+                "D56.1"
+            ]
+        },
+        {
+            "path": "history.prior_visit_same_dx",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Kunjungan sebelumnya dengan diagnosis yang sama (kontrol ulang)",
+            "needed_for": [
+                "Z09.0"
+            ]
+        },
+        {
+            "path": "history.post_op_suture_removal",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Kunjungan post operasi dengan angkat jahitan",
+            "needed_for": [
+                "Z09.0"
+            ]
+        },
+        {
+            "path": "billing.has_therapy_beyond_consult",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Billing memuat terapi/tata laksana selain asesmen dan konsultasi",
+            "needed_for": [
+                "Z09.0"
+            ]
+        },
+        {
+            "path": "imaging.efusi_pleura",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Efusi pleura pada foto toraks/USG/CT toraks (jumlah minimal atau lebih)",
+            "needed_for": [
+                "Efusi pleura J90-J91"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "therapy.pungsi_pleura",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Dilakukan pungsi pleura/torakosentesis (cairan tidak harus keluar)",
+            "needed_for": [
+                "Efusi pleura"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "therapy.pungsi_pleura_cairan_ditemukan",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Pungsi pleura terbukti ada cairan",
+            "needed_for": [
+                "Efusi pleura"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "therapy.efusi_tatalaksana_tambahan",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Tata laksana tambahan sesuai penyebab efusi, di luar tata laksana diagnosis primer",
+            "needed_for": [
+                "Efusi pleura"
+            ]
+        },
+        {
+            "path": "therapy.pneumonia_management",
+            "location": "fact",
+            "kind": "category_list",
+            "description": "Tata laksana pneumonia. BA tidak merinci jenisnya; perlu definisi klinis (usulan: antibiotik).",
+            "needed_for": [
+                "Pneumonia"
+            ]
+        },
+        {
+            "path": "operation.coded_procedure_consistent",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Kode prosedur sesuai nama tindakan di laporan operasi. Diturunkan oleh langkah pencocokan (belum dibuat).",
+            "derived_from": [
+                "operation.name_text",
+                "operation.procedure_performed_text",
+                "claim.procedures"
+            ],
+            "derivation": "Kamus nama tindakan -> kode ICD-9-CM dibandingkan dengan claim.procedures; tanpa entri kamus fakta tidak dibuat (hasil REVIEW).",
+            "needed_for": [
+                "Koding prosedur operasi"
+            ]
+        },
+        {
+            "path": "procedure.odc_operatif",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Pasien menjalani tindakan operatif One Day Care pada kunjungan ini",
+            "needed_for": [
+                "Z09.0"
+            ],
+            "db_source_hint": ""
+        },
+        {
+            "path": "clinical.perdarahan_akut",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Perdarahan akut terdokumentasi sebagai penyebab anemia",
+            "needed_for": [
+                "Anemia D62"
+            ]
+        },
+        {
+            "path": "clinical.keloid_gangguan_fungsi",
+            "location": "fact",
+            "kind": "flag",
+            "description": "Keloid mengganggu fungsi tubuh (bukan sekadar estetika)",
+            "needed_for": [
+                "Keloid L91.0"
+            ]
+        }
+    ],
+    "document_types": [
+        "resume_medis",
+        "hasil_lab",
+        "hasil_bga",
+        "hasil_kultur_darah",
+        "hasil_imaging_thorax",
+        "hasil_ct_scan",
+        "hasil_usg_atau_ct",
+        "laporan_operasi",
+        "laporan_kemoterapi",
+        "protokol_pemberian_kelasi_besi",
+        "product_batch_obat",
+        "billing"
+    ]
+}

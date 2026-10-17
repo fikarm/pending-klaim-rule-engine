@@ -1,0 +1,410 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pending-klaim-rule-schema",
+  "title": "Skema Aturan Pending Klaim",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "rules"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "examples": [
+        "1.0"
+      ]
+    },
+    "ruleset": {
+      "type": "object",
+      "description": "Metadata kumpulan aturan",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/rule"
+      }
+    }
+  },
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "type",
+        "scope",
+        "status",
+        "trigger",
+        "source",
+        "outcome"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^(RI|RJ|ALL)-[A-Z0-9_]+$",
+          "description": "ID unik. Prefix RI/RJ menunjukkan bagian dokumen sumber, BUKAN scope (lihat field scope). Contoh: RI-HIPOKALEMIA"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "clinical_validation",
+            "code_selection",
+            "administrative"
+          ],
+          "description": "clinical_validation: bukti klinis + tata laksana; code_selection: pemilihan/kombinasi kode ICD; administrative: kebijakan/kelengkapan/frekuensi"
+        },
+        "scope": {
+          "enum": [
+            "RI",
+            "RJ",
+            "ALL"
+          ],
+          "description": "RI = rawat inap, RJ = rawat jalan"
+        },
+        "status": {
+          "enum": [
+            "active",
+            "draft",
+            "needs_clarification",
+            "deprecated"
+          ],
+          "description": "Hanya 'active' yang dijalankan di produksi"
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date"
+        },
+        "effective_to": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "trigger": {
+          "$ref": "#/$defs/trigger"
+        },
+        "evidence": {
+          "$ref": "#/$defs/node",
+          "description": "Kriteria bukti diagnosis (lab, imaging, gejala)"
+        },
+        "treatment": {
+          "$ref": "#/$defs/node",
+          "description": "Kriteria tata laksana yang harus ada"
+        },
+        "extra_conditions": {
+          "$ref": "#/$defs/node",
+          "description": "Syarat tambahan (administratif, riwayat kunjungan, dsb.)"
+        },
+        "violation_when": {
+          "$ref": "#/$defs/node",
+          "description": "Kebalikan dari kriteria positif: bila node ini TRUE maka aturan DILANGGAR (FAIL). Dipakai untuk aturan jenis code_selection, mis. I50.- bersama I10."
+        },
+        "required_documents": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Dokumen penunjang yang wajib ada, contoh: laporan_kemoterapi"
+        },
+        "outcome": {
+          "$ref": "#/$defs/outcome"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "open_questions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Ambiguitas yang perlu dikonfirmasi ke ahli koding"
+        }
+      }
+    },
+    "trigger": {
+      "type": "object",
+      "description": "Kapan aturan dijalankan",
+      "required": [
+        "codes"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "codes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          },
+          "description": "Pola kode ICD-10/ICD-9-CM; boleh wildcard, contoh: I63.*, E87.6, 88.9*"
+        },
+        "code_system": {
+          "enum": [
+            "ICD10",
+            "ICD9CM"
+          ],
+          "default": "ICD10"
+        },
+        "position": {
+          "enum": [
+            "primary",
+            "secondary",
+            "any"
+          ],
+          "default": "any",
+          "description": "Posisi kode pada klaim"
+        }
+      }
+    },
+    "node": {
+      "description": "Pohon logika rekursif",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/condition"
+        },
+        {
+          "type": "object",
+          "required": [
+            "all"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "all": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/node"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "any"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "any": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/node"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "not"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "not": {
+              "$ref": "#/$defs/node"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "at_least"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "at_least": {
+              "type": "object",
+              "required": [
+                "n",
+                "of"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "n": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "of": {
+                  "type": "array",
+                  "minItems": 2,
+                  "items": {
+                    "$ref": "#/$defs/node"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "condition": {
+      "type": "object",
+      "required": [
+        "field",
+        "op"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "Nama kriteria yang tampil di laporan"
+        },
+        "field": {
+          "type": "string",
+          "description": "Path field hasil ekstraksi/data klaim, contoh: lab.kalium, therapy.types, claim.diagnoses, history.same_drug_count_this_month"
+        },
+        "op": {
+          "enum": [
+            "eq",
+            "ne",
+            "lt",
+            "lte",
+            "gt",
+            "gte",
+            "between",
+            "in",
+            "contains_any",
+            "contains_all",
+            "exists",
+            "not_exists",
+            "has_code",
+            "not_has_code",
+            "count_gte",
+            "count_lte"
+          ]
+        },
+        "value": {},
+        "unit": {
+          "type": "string"
+        },
+        "aggregate": {
+          "enum": [
+            "any",
+            "all",
+            "min",
+            "max",
+            "first",
+            "latest",
+            "count"
+          ],
+          "default": "any",
+          "description": "Cara menggabungkan fakta berulang (mis. kalium diukur 5x selama rawat). any: lolos bila salah satu pengukuran memenuhi; all: semua memenuhi; min/max/first/latest: bandingkan nilai agregat; count: jumlah fakta (untuk count_gte/count_lte)."
+        },
+        "on_missing": {
+          "enum": [
+            "fail",
+            "review"
+          ],
+          "default": "review",
+          "description": "Perilaku bila data tidak ditemukan di berkas: gagal, atau tandai perlu review manual"
+        }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "required": [
+        "pass_message",
+        "fail_message"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "pass_message": {
+          "type": "string"
+        },
+        "fail_message": {
+          "type": "string"
+        },
+        "review_message": {
+          "type": "string"
+        },
+        "action_on_fail": {
+          "enum": [
+            "flag",
+            "suggest_remove",
+            "suggest_replace",
+            "request_document"
+          ],
+          "default": "flag"
+        },
+        "suggest_codes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Kode pengganti/tambahan yang disarankan"
+        },
+        "severity": {
+          "enum": [
+            "info",
+            "warning",
+            "error"
+          ],
+          "default": "error"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "document",
+        "origin_note"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "document": {
+          "type": "string",
+          "description": "Contoh: BA Kesepakatan Pending Klaim 2019, Permenkes 26/2021, ICD-10, ICD-9-CM"
+        },
+        "year": {
+          "type": "integer"
+        },
+        "reference": {
+          "type": "string",
+          "description": "Pasal/halaman/bagian"
+        },
+        "origin_note": {
+          "type": "string",
+          "description": "Asal aturan di file proyek, contoh: rule_ba_2019.pdf no. 11"
+        },
+        "verified_against_original": {
+          "type": "boolean",
+          "default": false,
+          "description": "Sudah dicocokkan dengan teks resmi?"
+        },
+        "verification_note": {
+          "type": "string",
+          "description": "Hasil pencocokan dengan teks BA (hlm., metode, dan ketidakcocokan bila ada)"
+        }
+      }
+    }
+  }
+}

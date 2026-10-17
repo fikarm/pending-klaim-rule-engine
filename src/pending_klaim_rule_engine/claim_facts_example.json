@@ -1,0 +1,181 @@
+{
+    "schema_version": "1.0",
+    "run": {
+        "run_id": "run-0001",
+        "extracted_at": "2026-10-17T10:00:00+07:00",
+        "catalog_version": "0.1",
+        "mapping_version": "0.1",
+        "llm_model": "claude-sonnet-4-6"
+    },
+    "claim": {
+        "claim_id": "CONTOH-0001",
+        "encounter_type": "RI",
+        "admit_date": "2026-09-01",
+        "discharge_date": "2026-09-05",
+        "patient": {
+            "pseudonym_id": "P-8f3a",
+            "sex": "P",
+            "age_years": 54,
+            "age_days": null
+        },
+        "diagnoses": [
+            {
+                "code": "A09",
+                "position": "primary",
+                "sequence": 1
+            },
+            {
+                "code": "E87.6",
+                "position": "secondary",
+                "sequence": 2
+            }
+        ],
+        "procedures": [],
+        "documents_available": [
+            "resume_medis",
+            "hasil_lab"
+        ]
+    },
+    "facts": [
+        {
+            "field": "lab.kalium",
+            "kind": "measurement",
+            "status": "present",
+            "value": 2.6,
+            "unit": "mmol/L",
+            "observed_at": "2026-09-01T08:30:00+07:00",
+            "normalization": {
+                "raw_value": "2,6",
+                "raw_unit": "mEq/L",
+                "raw_label": "KALIUM",
+                "converted": true
+            },
+            "provenance": {
+                "method": "db_query",
+                "source_id": "lab_result_tbl",
+                "table": "hasil_lab",
+                "column": "hasil",
+                "record_id": "88121"
+            }
+        },
+        {
+            "field": "lab.kalium",
+            "kind": "measurement",
+            "status": "present",
+            "value": 3.4,
+            "unit": "mmol/L",
+            "observed_at": "2026-09-03T07:10:00+07:00",
+            "normalization": {
+                "raw_value": "3,4",
+                "raw_unit": "mEq/L",
+                "raw_label": "KALIUM",
+                "converted": true
+            },
+            "provenance": {
+                "method": "db_query",
+                "source_id": "lab_result_tbl",
+                "table": "hasil_lab",
+                "column": "hasil",
+                "record_id": "88410"
+            }
+        },
+        {
+            "field": "therapy.drugs",
+            "kind": "category_list",
+            "status": "present",
+            "value": [
+                "kcl_injeksi"
+            ],
+            "observed_at": "2026-09-01T11:00:00+07:00",
+            "normalization": {
+                "raw_value": "KCL 7.46% 25 ML INJ",
+                "raw_label": "KCL 7.46% 25 ML INJ",
+                "converted": true
+            },
+            "provenance": {
+                "method": "db_query",
+                "source_id": "pemberian_obat_tbl",
+                "table": "pemberian_obat",
+                "column": "nama_obat",
+                "record_id": "munc-5521"
+            }
+        },
+        {
+            "field": "therapy.respiratory_support",
+            "kind": "category_list",
+            "status": "absent",
+            "value": [],
+            "observed_at": null,
+            "provenance": {
+                "method": "llm_extraction",
+                "source_id": "resume_medis_text",
+                "document_type": "resume_medis",
+                "document_id": "RM-20260905-1",
+                "page": 1,
+                "text_span": "tidak terpasang oksigen selama perawatan"
+            },
+            "confidence": 0.9
+        },
+        {
+            "field": "therapy.transfusi_darah",
+            "kind": "flag",
+            "status": "conflicting",
+            "conflict_details": [
+                {
+                    "value": true,
+                    "provenance": {
+                        "method": "db_query",
+                        "source_id": "bank_darah_tbl",
+                        "table": "permintaan_darah",
+                        "record_id": "bd-77"
+                    }
+                },
+                {
+                    "value": false,
+                    "provenance": {
+                        "method": "llm_extraction",
+                        "source_id": "resume_medis_text",
+                        "document_type": "resume_medis",
+                        "document_id": "RM-20260905-1",
+                        "text_span": "tidak ada transfusi"
+                    }
+                }
+            ],
+            "provenance": {
+                "method": "rule_derived",
+                "derived_from": [
+                    "therapy.transfusi_darah"
+                ]
+            }
+        },
+        {
+            "field": "symptom.demam",
+            "kind": "flag",
+            "status": "present",
+            "value": true,
+            "provenance": {
+                "method": "llm_extraction",
+                "source_id": "resume_medis_text",
+                "document_type": "resume_medis",
+                "document_id": "RM-20260905-1",
+                "page": 1,
+                "text_span": "riwayat demam 2 hari sebelum masuk"
+            },
+            "confidence": 0.82
+        }
+    ],
+    "quality": {
+        "warnings": [
+            {
+                "code": "UNIT_CONVERTED",
+                "field": "lab.kalium",
+                "message": "mEq/L dikonversi ke mmol/L (faktor 1)."
+            },
+            {
+                "code": "SOURCE_CONFLICT",
+                "field": "therapy.transfusi_darah",
+                "message": "Bank darah mencatat permintaan transfusi, resume medis menyatakan tidak ada. Perlu review manual."
+            }
+        ]
+    }
+}
