@@ -3,7 +3,7 @@ import json
 import unittest
 from pathlib import Path
 
-from klaim_engine import (
+from pending_klaim_rule_engine.klaim_engine import (
     Context,
     Options,
     derive_facts,
@@ -14,6 +14,7 @@ from klaim_engine import (
     tri_any,
     tri_at_least,
     tri_not,
+    validate_claim_document,
 )
 
 HERE = Path(__file__).parent
@@ -67,8 +68,18 @@ def claim(dx, facts=None, enc="RI", docs=None, procs=()):
     }
 
 
+def approved_ruleset():
+    ruleset = copy.deepcopy(RULES)
+    for rule in ruleset["rules"]:
+        source = rule["source"]
+        source["verified_against_original"] = True
+        source["reconciliation_status"] = "verified"
+        rule["open_questions"] = []
+    return ruleset
+
+
 def run(doc, **opt):
-    return evaluate_claim(RULES, doc, Options(**opt))
+    return evaluate_claim(approved_ruleset(), doc, Options(**opt))
 
 
 def status_of(res, rule_id):
@@ -268,10 +279,15 @@ class TestSepsisDanStatusAturan(unittest.TestCase):
     MGMT = fact("therapy.sepsis_management", ["antibiotik_iv"], kind="category_list")
     DOCS = ["resume_medis"]
 
-    def test_needs_clarification_dilewati_secara_default(self):
+    def test_needs_clarification_tetap_review_secara_default(self):
         self.assertEqual(
-            status_of(run(claim([("A41.9", "primary")])), "RI-SEPSIS"), "NOT_APPLICABLE"
+            status_of(run(claim([("A41.9", "primary")])), "RI-SEPSIS"), "REVIEW"
         )
+
+    def run_verified_sepsis(self, doc):
+        ruleset = approved_ruleset()
+        next(r for r in ruleset["rules"] if r["id"] == "RI-SEPSIS")["status"] = "active"
+        return evaluate_claim(ruleset, doc, Options(include_statuses=("active",)))
 
     def test_dua_kriteria_vital_cukup_sesuai_teks_ba(self):
         facts = [
@@ -281,7 +297,7 @@ class TestSepsisDanStatusAturan(unittest.TestCase):
         ]
         self.assertEqual(
             status_of(
-                run(claim([("A41.9", "primary")], facts, docs=self.DOCS), **self.OPTS),
+                self.run_verified_sepsis(claim([("A41.9", "primary")], facts, docs=self.DOCS)),
                 "RI-SEPSIS",
             ),
             "PASS",
@@ -291,7 +307,7 @@ class TestSepsisDanStatusAturan(unittest.TestCase):
         facts = [fact("vital.nadi", 110, unit="x/menit"), self.MGMT]
         self.assertEqual(
             status_of(
-                run(claim([("A41.9", "primary")], facts, docs=self.DOCS), **self.OPTS),
+                self.run_verified_sepsis(claim([("A41.9", "primary")], facts, docs=self.DOCS)),
                 "RI-SEPSIS",
             ),
             "REVIEW",
@@ -304,7 +320,7 @@ class TestSepsisDanStatusAturan(unittest.TestCase):
         ]
         self.assertEqual(
             status_of(
-                run(claim([("A41.9", "primary")], facts, docs=self.DOCS), **self.OPTS),
+                self.run_verified_sepsis(claim([("A41.9", "primary")], facts, docs=self.DOCS)),
                 "RI-SEPSIS",
             ),
             "FAIL",
@@ -319,7 +335,7 @@ class TestSepsisDanStatusAturan(unittest.TestCase):
         ]
         self.assertEqual(
             status_of(
-                run(claim([("A41.9", "primary")], facts, docs=self.DOCS), **self.OPTS),
+                self.run_verified_sepsis(claim([("A41.9", "primary")], facts, docs=self.DOCS)),
                 "RI-SEPSIS",
             ),
             "PASS",
@@ -336,7 +352,12 @@ class TestKualitasData(unittest.TestCase):
         "trigger": {"codes": ["J18.*"]},
         "evidence": {"field": "symptom.demam", "op": "eq", "value": True},
         "outcome": {"pass_message": "ok", "fail_message": "gagal"},
-        "source": {"document": "uji", "origin_note": "uji"},
+        "source": {
+            "document": "uji",
+            "origin_note": "uji",
+            "verified_against_original": True,
+            "reconciliation_status": "verified",
+        },
     }
 
     def go(self, facts):
@@ -363,7 +384,10 @@ class TestKualitasData(unittest.TestCase):
             None,
             kind="flag",
             status="conflicting",
-            conflict_details=[{"value": True}, {"value": False}],
+            conflict_details=[
+                {"value": True, "provenance": {"method": "db_query"}},
+                {"value": False, "provenance": {"method": "llm_extraction"}},
+            ],
         )
         self.assertEqual(self.go([f]), "REVIEW")
 
@@ -371,6 +395,57 @@ class TestKualitasData(unittest.TestCase):
         self.assertEqual(
             self.go([fact("symptom.demam", None, kind="flag", status="absent")]), "FAIL"
         )
+
+    def test_bukti_konflik_menampilkan_nilai_dan_provenance_kedua_sumber(self):
+        conflicting = fact(
+            "symptom.demam",
+            None,
+            kind="flag",
+            status="conflicting",
+            conflict_details=[
+                {
+                    "value": True,
+                    "provenance": {"method": "db_query", "source_id": "vital"},
+                },
+                {
+                    "value": False,
+                    "provenance": {
+                        "method": "llm_extraction",
+                        "source_id": "resume_medis",
+                    },
+                },
+            ],
+        )
+        result = evaluate_claim(
+            {"rules": [self.RULE]}, claim([("J18.9", "primary")], [conflicting])
+        )["diagnosis_results"][0]["rule_results"][0]
+
+        self.assertEqual(result["status"], "REVIEW")
+        conflict_sources = result["trace"]["evidence"]["evidence"][0]["conflicts"]
+        self.assertEqual([source["value"] for source in conflict_sources], [True, False])
+        self.assertEqual(
+            [source["provenance"]["source_id"] for source in conflict_sources],
+            ["vital", "resume_medis"],
+        )
+
+    def test_bukti_hilang_dan_dokumen_kurang_menyebutkan_tindak_lanjut(self):
+        missing_fact = evaluate_claim(
+            {"rules": [self.RULE]}, claim([("J18.9", "primary")])
+        )["diagnosis_results"][0]["rule_results"][0]
+        self.assertEqual(missing_fact["status"], "REVIEW")
+        self.assertEqual(missing_fact["missing_fields"], ["symptom.demam"])
+        self.assertIn("manual_review", missing_fact["actions"])
+
+        rule_with_document = copy.deepcopy(self.RULE)
+        rule_with_document["required_documents"] = ["resume_medis"]
+        missing_document = evaluate_claim(
+            {"rules": [rule_with_document]},
+            claim([("J18.9", "primary")], [flag("symptom.demam")]),
+        )["diagnosis_results"][0]["rule_results"][0]
+        self.assertEqual(missing_document["status"], "REVIEW")
+        self.assertEqual(missing_document["missing_documents"], ["resume_medis"])
+        self.assertIn("request_document", missing_document["actions"])
+        self.assertIn("manual_review", missing_document["actions"])
 
 
 class TestAtLeast(unittest.TestCase):
@@ -518,18 +593,22 @@ class TestAturanBaru(unittest.TestCase):
             "PASS",
         )
 
-    # --- anemia RI (needs_clarification: hanya jalan di mode bayangan)
+    # --- anemia RI: logic checks use a locally approved fixture
     def test_anemia_ri(self):
-        opts = dict(include_statuses=("active", "needs_clarification"))
         d = lambda hb, trf: claim(
             [("D64.9", "secondary")],
             [fact("lab.hb", hb, unit="g/dL"), flag("therapy.transfusi_darah", trf)],
             docs=["hasil_lab", "resume_medis"],
         )
-        self.assertEqual(self.st("RI-ANEMIA_D64_9", d(6.5, True), **opts), "PASS")
-        self.assertEqual(self.st("RI-ANEMIA_D64_9", d(9.0, True), **opts), "FAIL")
-        self.assertEqual(self.st("RI-ANEMIA_D64_9", d(6.5, False), **opts), "FAIL")
-        self.assertEqual(self.st("RI-ANEMIA_D64_9", d(6.5, True)), "NOT_APPLICABLE")
+        def status(hb, transfusion):
+            ruleset = approved_ruleset()
+            next(r for r in ruleset["rules"] if r["id"] == "RI-ANEMIA_D64_9")["status"] = "active"
+            return status_of(evaluate_claim(ruleset, d(hb, transfusion)), "RI-ANEMIA_D64_9")
+
+        self.assertEqual(status(6.5, True), "PASS")
+        self.assertEqual(status(9.0, True), "FAIL")
+        self.assertEqual(status(6.5, False), "FAIL")
+        self.assertEqual(self.st("RI-ANEMIA_D64_9", d(6.5, True)), "REVIEW")
 
     # --- asites
     def test_asites(self):
@@ -585,9 +664,9 @@ class TestAturanBaru(unittest.TestCase):
         )
 
     # --- prosedur operasi (draft)
-    def test_prosedur_operasi_draft_dilewati(self):
+    def test_prosedur_operasi_draft_tetap_review(self):
         d = claim([("K35.8", "primary")], procs=["47.01"], docs=["laporan_operasi"])
-        self.assertEqual(self.st("RI-PROSEDUR_OPERASI", d), "NOT_APPLICABLE")
+        self.assertEqual(self.st("RI-PROSEDUR_OPERASI", d), "REVIEW")
         self.assertEqual(
             self.st("RI-PROSEDUR_OPERASI", d, include_statuses=("active", "draft")),
             "REVIEW",
@@ -781,6 +860,191 @@ class TestRuleSetLengkap(unittest.TestCase):
     def test_semua_aturan_punya_catatan_verifikasi(self):
         for r in RULES["rules"]:
             self.assertIn("verification_note", r["source"], r["id"])
+
+    def test_semua_aturan_mencatat_lineage_dan_status_rekonsiliasi(self):
+        lineage = RULES["ruleset"]["lineage"]
+        self.assertEqual(
+            lineage["upstream_document"],
+            "docs/berita_acara_pending_klaim_tahun_2019.pdf",
+        )
+        self.assertEqual(lineage["intermediate_document"], "docs/rule_rsds.pdf")
+        self.assertEqual(
+            {r["source"]["reconciliation_status"] for r in RULES["rules"]},
+            {"unverified", "disputed"},
+        )
+        self.assertTrue(
+            all(r["source"].get("reconciliation_note") for r in RULES["rules"])
+        )
+
+
+class TestValidasiDokumenKlaim(unittest.TestCase):
+    def test_contoh_klaim_valid(self):
+        validate_claim_document(BASE)
+
+    def test_jenis_layanan_tidak_dikenal_ditolak(self):
+        doc = copy.deepcopy(BASE)
+        doc["claim"]["encounter_type"] = "UGD"
+        with self.assertRaisesRegex(ValueError, "encounter_type"):
+            evaluate_claim(RULES, doc)
+
+    def test_diagnosis_tanpa_posisi_valid_ditolak(self):
+        doc = copy.deepcopy(BASE)
+        del doc["claim"]["diagnoses"][0]["position"]
+        with self.assertRaisesRegex(ValueError, "diagnoses\\[0\\].position"):
+            validate_claim_document(doc)
+
+    def test_status_fakta_tidak_dikenal_ditolak(self):
+        doc = copy.deepcopy(BASE)
+        doc["facts"][0]["status"] = "unknown"
+        with self.assertRaisesRegex(ValueError, "facts\\[0\\].status"):
+            validate_claim_document(doc)
+
+    def test_provenance_fakta_tanpa_method_ditolak(self):
+        doc = copy.deepcopy(BASE)
+        doc["facts"][0]["provenance"] = {}
+        with self.assertRaisesRegex(ValueError, "facts\\[0\\].provenance.method"):
+            validate_claim_document(doc)
+
+
+class TestHasilPerDiagnosis(unittest.TestCase):
+    def test_hasil_mengikuti_urutan_diagnosis_tanpa_mutasi(self):
+        doc = copy.deepcopy(BASE)
+        original_diagnoses = copy.deepcopy(doc["claim"]["diagnoses"])
+
+        result = evaluate_claim(approved_ruleset(), doc)
+
+        diagnosis_results = result["diagnosis_results"]
+        self.assertEqual(len(diagnosis_results), len(original_diagnoses))
+        self.assertEqual(
+            [item["diagnosis"] for item in diagnosis_results], original_diagnoses
+        )
+        self.assertEqual(
+            [item["status"] for item in diagnosis_results],
+            ["NOT_APPLICABLE", "PASS"],
+        )
+        self.assertEqual(doc["claim"]["diagnoses"], original_diagnoses)
+
+    def test_scope_dan_posisi_membatasi_rule_diagnosis(self):
+        facts = [
+            fact("therapy.drugs", ["deferasirox"], kind="category_list"),
+            fact("history.iron_chelation_claims_this_month", 1),
+        ]
+        documents = ["protokol_pemberian_kelasi_besi", "product_batch_obat"]
+        primary = claim([("D56.1", "primary")], facts, enc="RJ", docs=documents)
+        secondary = claim([("D56.1", "secondary")], facts, enc="RJ", docs=documents)
+        inpatient = claim([("D56.1", "primary")], facts, enc="RI", docs=documents)
+
+        self.assertEqual(
+            evaluate_claim(approved_ruleset(), primary)["diagnosis_results"][0]["status"], "PASS"
+        )
+        self.assertEqual(
+            evaluate_claim(approved_ruleset(), secondary)["diagnosis_results"][0]["status"],
+            "NOT_APPLICABLE",
+        )
+        self.assertEqual(
+            evaluate_claim(approved_ruleset(), inpatient)["diagnosis_results"][0]["status"],
+            "NOT_APPLICABLE",
+        )
+
+    def test_rule_prosedur_tidak_mengubah_hasil_keseluruhan_diagnosis(self):
+        procedure_only_claim = claim([], enc="RJ", procs=["21.21"])
+
+        result = evaluate_claim(RULES, procedure_only_claim)
+
+        self.assertEqual(result["diagnosis_results"], [])
+        self.assertEqual(result["diagnosis_counts"], {})
+        self.assertEqual(result["overall"], "NOT_APPLICABLE")
+
+
+class TestProvenanceAturan(unittest.TestCase):
+    LINEAGE = {
+        "upstream_document": "Berita Acara Kesepakatan Pending Klaim",
+        "intermediate_document": "rule_rsds.pdf",
+        "schema_artifact": "rule_schema.json",
+    }
+    RULE = {
+        "id": "ALL-DEMAM",
+        "title": "Demam",
+        "type": "clinical_validation",
+        "scope": "ALL",
+        "status": "active",
+        "trigger": {"codes": ["J18.9"]},
+        "evidence": {"field": "symptom.demam", "op": "eq", "value": True},
+        "outcome": {"pass_message": "Sesuai", "fail_message": "Tidak sesuai"},
+        "source": {
+            "document": "BA Kesepakatan Pending Klaim",
+            "year": 2019,
+            "reference": "halaman 3",
+            "origin_note": "rule_rsds.pdf, bagian pneumonia",
+            "verified_against_original": True,
+            "reconciliation_status": "verified",
+            "reconciliation_note": "Cocok dengan kedua sumber.",
+        },
+    }
+
+    def evaluate(self, rule, options=None):
+        claim_doc = claim(
+            [("J18.9", "primary")], [fact("symptom.demam", True, kind="flag")]
+        )
+        return evaluate_claim(
+            {"ruleset": {"lineage": self.LINEAGE}, "rules": [rule]}, claim_doc, options
+        )["results"][0]
+
+    def test_hanya_rule_verified_dapat_memberikan_keputusan_final(self):
+        self.assertEqual(self.evaluate(copy.deepcopy(self.RULE))["status"], "PASS")
+
+        excluded = self.evaluate(copy.deepcopy(self.RULE), Options(include_statuses=()))
+        self.assertEqual(excluded["status"], "REVIEW")
+
+        unverified = copy.deepcopy(self.RULE)
+        unverified["source"]["verified_against_original"] = False
+        unverified["source"]["reconciliation_status"] = "unverified"
+        self.assertEqual(self.evaluate(unverified)["status"], "REVIEW")
+
+        legacy = copy.deepcopy(self.RULE)
+        del legacy["source"]["reconciliation_status"]
+        self.assertEqual(self.evaluate(legacy)["status"], "REVIEW")
+
+        disputed = copy.deepcopy(self.RULE)
+        disputed["source"]["reconciliation_status"] = "disputed"
+        self.assertEqual(self.evaluate(disputed)["status"], "REVIEW")
+
+        draft = copy.deepcopy(self.RULE)
+        draft["status"] = "draft"
+        draft["source"]["reconciliation_status"] = "unverified"
+        self.assertEqual(self.evaluate(draft)["status"], "REVIEW")
+
+    def test_hasil_menampilkan_sumber_dan_lineage(self):
+        result = self.evaluate(copy.deepcopy(self.RULE))
+        self.assertEqual(
+            result["source_details"]["document"], "BA Kesepakatan Pending Klaim"
+        )
+        self.assertEqual(result["source_details"]["year"], 2019)
+        self.assertEqual(result["source_details"]["reference"], "halaman 3")
+        self.assertEqual(
+            result["source_details"]["lineage"]["intermediate_document"],
+            "rule_rsds.pdf",
+        )
+
+    def test_rule_disputed_dalam_data_produksi_hanya_menghasilkan_review(self):
+        result = evaluate_claim(
+            RULES,
+            claim(
+                [("E87.6", "secondary")],
+                [
+                    fact("lab.kalium", 2.6),
+                    fact("therapy.drugs", ["kcl_injeksi"], kind="category_list"),
+                ],
+                docs=["hasil_lab", "resume_medis"],
+            ),
+        )["diagnosis_results"][0]
+        self.assertEqual(result["status"], "REVIEW")
+        rule_result = result["rule_results"][0]
+        self.assertEqual(rule_result["source_details"]["reconciliation_status"], "disputed")
+        self.assertEqual(
+            rule_result["source_details"]["lineage"]["upstream_document"],
+            "docs/berita_acara_pending_klaim_tahun_2019.pdf",
+        )
 
 
 if __name__ == "__main__":

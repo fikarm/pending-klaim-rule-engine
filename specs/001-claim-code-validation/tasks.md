@@ -12,7 +12,7 @@
 
 **Purpose**: Formalize the claim input contract used by the shared evaluator.
 
-- [ ] T001 Add `claim_facts_schema.json` under `src/pending_klaim_rule_engine/` for claim encounter type, ordered diagnosis entries, supporting facts, document availability, and provenance; make direct patient identifiers optional and unnecessary for evaluation.
+- [X] T001 Add `claim_facts_schema.json` under `src/pending_klaim_rule_engine/` for claim encounter type, ordered diagnosis entries, supporting facts, document availability, and provenance; make direct patient identifiers optional and unnecessary for evaluation.
 
 ---
 
@@ -20,7 +20,7 @@
 
 **Purpose**: Enforce the input boundary before any user-story evaluation.
 
-- [ ] T002 Implement claim/fact shape validation in `src/pending_klaim_rule_engine/klaim_engine.py` and call it before evaluation; reject unknown encounter types, malformed diagnosis entries, unsupported diagnosis positions, and malformed fact status/provenance with actionable errors.
+- [X] T002 Implement claim/fact shape validation in `src/pending_klaim_rule_engine/klaim_engine.py` and call it before evaluation; reject unknown encounter types, malformed diagnosis entries, unsupported diagnosis positions, and malformed fact status/provenance with actionable errors.
 
 **Checkpoint**: Claim inputs have a defined contract and are validated before rule evaluation.
 
@@ -32,9 +32,9 @@
 
 **Independent Test**: Evaluate sample RI and RJ claims containing primary and secondary diagnoses, a position-restricted rule, and a code with no applicable rule. Confirm each input diagnosis has its own status/reason and the input diagnosis list is unchanged.
 
-- [ ] T003 [US1] Add tests in `src/pending_klaim_rule_engine/test_klaim_engine.py` for RI/RJ scope matching, primary/secondary position matching, unmatched diagnoses returning `NOT_APPLICABLE`, one result per diagnosis, and unchanged diagnosis codes/order.
-- [ ] T004 [US1] Update `evaluate_claim()` and rule applicability in `src/pending_klaim_rule_engine/klaim_engine.py` to produce a result for each diagnosis, evaluate only its matching code/scope/position rules, retain `NOT_APPLICABLE` when no diagnosis rule applies, and never mutate diagnosis input.
-- [ ] T005 [P] [US1] Expose the existing CLI `main()` through `src/pending_klaim_rule_engine/__init__.py` so the `pending-klaim-rule-engine` entry point declared in `pyproject.toml` is runnable.
+- [X] T003 [US1] Add tests in `src/pending_klaim_rule_engine/test_klaim_engine.py` for RI/RJ scope matching, primary/secondary position matching, unmatched diagnoses returning `NOT_APPLICABLE`, one result per diagnosis, and unchanged diagnosis codes/order.
+- [X] T004 [US1] Update `evaluate_claim()` and rule applicability in `src/pending_klaim_rule_engine/klaim_engine.py` to produce a result for each diagnosis, evaluate only its matching code/scope/position rules, retain `NOT_APPLICABLE` when no diagnosis rule applies, and never mutate diagnosis input.
+- [X] T005 [P] [US1] Expose the existing CLI `main()` through `src/pending_klaim_rule_engine/__init__.py` so the `pending-klaim-rule-engine` entry point declared in `pyproject.toml` is runnable.
 
 **Checkpoint**: A verifier can run a claim through the package CLI and inspect independent results without diagnosis edits.
 
@@ -46,8 +46,8 @@
 
 **Independent Test**: Evaluate claims with a missing required fact, a missing required document, and conflicting facts from two sources. Confirm each result is `REVIEW` where appropriate and exposes missing items, both source values/provenance, the criteria trace, and a next step.
 
-- [ ] T006 [US2] Add tests in `src/pending_klaim_rule_engine/test_klaim_engine.py` for missing facts, missing documents, conflicting values from distinct sources, and traceable suggested actions; assert conflicts never produce a final status.
-- [ ] T007 [US2] Extend evidence trace and result construction in `src/pending_klaim_rule_engine/klaim_engine.py` to show all conflicting values and provenance, identify missing fields/documents, and provide a next action while preserving the criterion-by-criterion trace.
+- [X] T006 [US2] Add tests in `src/pending_klaim_rule_engine/test_klaim_engine.py` for missing facts, missing documents, conflicting values from distinct sources, and traceable suggested actions; assert conflicts never produce a final status.
+- [X] T007 [US2] Extend evidence trace and result construction in `src/pending_klaim_rule_engine/klaim_engine.py` and document the output in `specs/001-claim-code-validation/contracts/README.md` to show all conflicting values and provenance, identify missing fields/documents, and provide a next action while preserving the criterion-by-criterion trace.
 
 **Checkpoint**: A verifier can identify why review is required and what evidence or action is needed.
 
@@ -59,10 +59,10 @@
 
 **Independent Test**: Evaluate one verified active diagnosis rule and one matching draft, unverified, or unresolved rule. Confirm source document/year/reference and verification details are returned, verified criteria can produce a final result, and unresolved rules produce `REVIEW` rather than `PASS` or `FAIL`.
 
-- [ ] T008 [US3] Add tests in `src/pending_klaim_rule_engine/test_klaim_engine.py` for verified active rules, unverified active rules, draft rules, and unresolved source differences; assert only verified and reconciled rules can produce `PASS` or `FAIL`.
-- [ ] T009 [P] [US3] Extend the source definition in `src/pending_klaim_rule_engine/rule_schema.json` with explicit BA 2019 and RSDS lineage metadata plus a reconciliation state that distinguishes verified, unverified, and disputed rule interpretations.
-- [ ] T010 [P] [US3] Reconcile diagnosis rules in `src/pending_klaim_rule_engine/rules_ba_2019.json` against `docs/rule_rsds.pdf` and `docs/berita_acara_pending_klaim_tahun_2019.pdf`; record source year/reference and lineage, and mark rules unverified or disputed unless they were checked against the cited source. Keep procedure-code rules outside the v1 diagnosis acceptance set.
-- [ ] T011 [US3] Update applicability and result formatting in `src/pending_klaim_rule_engine/klaim_engine.py` so a matching draft, unverified, or disputed rule yields `REVIEW`, while source document, year, page/section when known, verification state, and reconciliation note are visible in the diagnosis result.
+- [X] T008 [US3] Add tests in `src/pending_klaim_rule_engine/test_klaim_engine.py` for verified active rules, unverified active rules, draft rules, and unresolved source differences; assert only verified and reconciled rules can produce `PASS` or `FAIL`.
+- [X] T009 [P] [US3] Extend ruleset metadata in `src/pending_klaim_rule_engine/rule_schema.json` with BA 2019 and RSDS lineage; extend each rule source definition with a reconciliation state distinguishing verified, unverified, and disputed interpretations.
+- [X] T010 [P] [US3] Reconcile diagnosis rules in `src/pending_klaim_rule_engine/rules_ba_2019.json` against `docs/rule_rsds.pdf` and `docs/berita_acara_pending_klaim_tahun_2019.pdf`; record source year/reference and lineage, and mark rules unverified or disputed unless they were checked against the cited source. Keep procedure-code rules outside the v1 diagnosis acceptance set.
+- [X] T011 [US3] Update applicability and result formatting in `src/pending_klaim_rule_engine/klaim_engine.py` so a matching draft, unverified, or disputed rule yields `REVIEW`, while source document, year, page/section when known, verification state, and reconciliation note are visible in the diagnosis result.
 
 **Checkpoint**: Rule decisions are traceable to their source chain and unresolved interpretations cannot yield final outcomes.
 
@@ -73,7 +73,10 @@
 **Purpose**: Validate all supported diagnosis cases and the documented end-to-end workflow.
 
 - [ ] T012 Add table-driven acceptance cases in `src/pending_klaim_rule_engine/test_klaim_engine.py` for every diagnosis case in FR-008 across applicable service types, using examples approved by the coding/rule owner and covering expected `PASS`, `FAIL`, `REVIEW`, and `NOT_APPLICABLE` outcomes.
-- [ ] T013 Run `uv run python -m unittest discover -s src/pending_klaim_rule_engine -p 'test_*.py'` and the rule lint command against `src/pending_klaim_rule_engine/rules_ba_2019.json` and `src/pending_klaim_rule_engine/field_catalog.json`; update expected commands/outcomes in `specs/001-claim-code-validation/quickstart.md` if they changed.
+
+**Blocked**: T012 requires an acceptance claim set approved by the coding/rule owner. No such approved examples are present in the repository; do not infer clinical expected outcomes from the unverified/disputed rules.
+
+- [X] T013 Run `uv run python -m unittest discover -s src/pending_klaim_rule_engine -p 'test_*.py'` and the rule lint command against `src/pending_klaim_rule_engine/rules_ba_2019.json` and `src/pending_klaim_rule_engine/field_catalog.json`; update expected commands/outcomes in `specs/001-claim-code-validation/quickstart.md` if they changed.
 
 ---
 

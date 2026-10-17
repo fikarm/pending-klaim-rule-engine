@@ -9,6 +9,14 @@ The repository uses a JSON schema defined in `src/pending_klaim_rule_engine/rule
 ```json
 {
   "schema_version": "1.0",
+  "ruleset": {
+    "lineage": {
+      "upstream_document": "docs/berita_acara_pending_klaim_tahun_2019.pdf",
+      "intermediate_document": "docs/rule_rsds.pdf",
+      "schema_artifact": "src/pending_klaim_rule_engine/rule_schema.json",
+      "rule_artifact": "src/pending_klaim_rule_engine/rules_ba_2019.json"
+    }
+  },
   "rules": [
     {
       "id": "RI-HIPOKALEMIA",
@@ -30,7 +38,9 @@ The repository uses a JSON schema defined in `src/pending_klaim_rule_engine/rule
       "source": {
         "document": "Berita Acara Pending Klaim",
         "year": 2019,
-        "verified_against_original": true
+        "verified_against_original": true,
+        "reconciliation_status": "verified",
+        "reconciliation_note": "Sudah diperiksa terhadap BA dan dokumen RSDS."
       }
     }
   ]
@@ -74,23 +84,46 @@ The CLI `evaluate --json` command returns a deterministic document with the foll
 ```json
 {
   "claim_id": "T-001",
-  "overall": "PASS",
-  "counts": { "PASS": 1, "REVIEW": 0, "FAIL": 0 },
+  "overall": "REVIEW",
+  "counts": { "REVIEW": 1, "NOT_APPLICABLE": 22 },
+  "diagnosis_counts": { "REVIEW": 1, "NOT_APPLICABLE": 1 },
   "results": [
     {
       "rule_id": "RI-HIPOKALEMIA",
-      "status": "PASS",
+      "status": "REVIEW",
       "message": "...",
       "matched_codes": ["E87.6"],
+      "source_details": {
+        "document": "Berita Acara Pending Klaim",
+        "year": 2019,
+        "reference": "halaman atau bagian jika diketahui",
+        "verified_against_original": false,
+        "reconciliation_status": "disputed",
+        "lineage": {}
+      },
       "missing_documents": [],
+      "missing_fields": [],
       "actions": ["flag"],
       "trace": {}
+    }
+  ],
+  "diagnosis_results": [
+    {
+      "diagnosis_index": 0,
+      "diagnosis": { "code": "E87.6", "position": "primary" },
+      "status": "REVIEW",
+      "message": "Sedikitnya satu aturan diagnosis yang cocok memerlukan tinjauan manual.",
+      "rule_results": ["hasil aturan yang cocok"]
     }
   ],
   "derived_facts": [],
   "unverified_rules_used": []
 }
 ```
+
+`diagnosis_results` contains exactly one ordered summary per diagnosis. Each summary contains the original diagnosis entry, aggregate status and message, and the matching per-rule results. Conflicting evidence in a trace preserves each source value and provenance; unknown evidence is identified in `missing_fields` and produces a `manual_review` action.
+
+`overall` and `diagnosis_counts` summarize diagnosis results only. `counts` summarizes the legacy flat per-rule `results` array, which can include non-diagnosis rules; those rules do not affect the diagnosis-level `overall` status.
 
 ## 4. CLI contract
 

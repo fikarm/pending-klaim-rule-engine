@@ -29,9 +29,10 @@ uv run python -m pending_klaim_rule_engine.klaim_engine \
 
 ### Expected outcome
 
-- The command should return a JSON payload with an `overall` status and a `results` array.
-- At least one rule should evaluate as `PASS`, and the output should explain the rule source and trace.
-- The response should include `derived_facts` when the engine infers values such as `pf_ratio` or `leukosit_tinggi`.
+- The command returns a JSON payload with `overall`, per-rule `results`, and one ordered `diagnosis_results` entry per diagnosis.
+- The supplied sample claim currently returns `REVIEW` for `E87.6` because that rule is marked disputed; this is intentional until the rule owner reconciles it against the BA and RSDS sources.
+- Final `PASS` or `FAIL` results require active rules with verified source and reconciliation metadata and no unresolved questions.
+- The response includes `derived_facts` when the engine derives values such as `pf_ratio` or `leukosit_tinggi`.
 
 ## Run the rule lint check
 
@@ -44,8 +45,8 @@ uv run python -m pending_klaim_rule_engine.klaim_engine \
 
 ### Expected outcome
 
-- The lint command should return no errors for the current validated rule set.
-- Any warnings should be reviewed manually as they indicate mismatches or ambiguous source metadata.
+- The lint command should return no errors for the current rule set.
+- Warnings are expected for active rules that are unverified or have source interpretation questions; they require rule-owner review before final outcomes are enabled.
 
 ## Run the repository test suite
 
@@ -60,7 +61,7 @@ uv run python -m unittest discover -s src/pending_klaim_rule_engine -p 'test_*.p
 
 ## Validation scenarios to inspect manually
 
-1. A recognized primary diagnosis with sufficient supporting evidence should result in `PASS`.
-2. A diagnosis with missing mandatory documents should result in `REVIEW` or `FAIL` according to the configured policy.
+1. A recognized primary diagnosis with sufficient supporting evidence and a verified, reconciled rule should result in `PASS`.
+2. A diagnosis with missing mandatory documents should result in `REVIEW` or `FAIL` according to the configured policy, unless unresolved rule provenance independently requires `REVIEW`.
 3. A diagnosis whose rule is outside scope or whose code does not match the trigger should result in `NOT_APPLICABLE`.
 4. Conflicting evidence on a required field should result in `REVIEW` rather than a silent final decision.

@@ -3,7 +3,13 @@
     "ruleset": {
         "name": "Pending Klaim - BA 2019 (draf)",
         "updated_at": "2026-10-17",
-        "description": "Disusun dari rule_ba_2019.pdf dan dicocokkan dengan OCR BA resmi. Periksa kolom verification_note dan open_questions sebelum dipakai."
+        "description": "Disusun dari rule_ba_2019.pdf dan dicocokkan dengan OCR BA resmi. Periksa kolom verification_note dan open_questions sebelum dipakai.",
+        "lineage": {
+            "upstream_document": "docs/berita_acara_pending_klaim_tahun_2019.pdf",
+            "intermediate_document": "docs/rule_rsds.pdf",
+            "schema_artifact": "src/pending_klaim_rule_engine/rule_schema.json",
+            "rule_artifact": "src/pending_klaim_rule_engine/rules_ba_2019.json"
+        }
     },
     "rules": [
         {
@@ -51,7 +57,9 @@
                 "reference": "BA hlm. 36 (butir 6) vs rule_ba_2019.pdf no. 11",
                 "origin_note": "rule_ba_2019.pdf, Hypokalemia",
                 "verified_against_original": false,
-                "verification_note": "TIDAK COCOK dengan BA hlm. 36 (dicek visual): BA menyatakan hipokalemia bila K < 3,5 mEq/L (anak < 3 dan/atau ada gejala; pasien dengan penyakit jantung < 3,5) dan boleh jadi diagnosis sekunder bila ada terapi. Ambang < 3,00 dan 'injeksi KCl' berasal dari rule_ba_2019.pdf."
+                "verification_note": "TIDAK COCOK dengan BA hlm. 36 (dicek visual): BA menyatakan hipokalemia bila K < 3,5 mEq/L (anak < 3 dan/atau ada gejala; pasien dengan penyakit jantung < 3,5) dan boleh jadi diagnosis sekunder bila ada terapi. Ambang < 3,00 dan 'injeksi KCl' berasal dari rule_ba_2019.pdf.",
+                "reconciliation_status": "disputed",
+                "reconciliation_note": "Terdapat perbedaan sumber atau penafsiran yang belum diselesaikan; lihat verification_note dan open_questions."
             },
             "open_questions": [
                 "Ambang rule_ba_2019.pdf (<3,00 + injeksi KCl) lebih ketat daripada BA hlm. 36 (<3,5, terapi apa pun). Tetapkan acuan yang dipakai.",
@@ -158,7 +166,9 @@
                 "reference": "BA hlm. 39",
                 "origin_note": "rule_ba_2019.pdf, Respiratory Failure Akut",
                 "verified_against_original": true,
-                "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final. Kelima kriteria cocok."
+                "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final. Kelima kriteria cocok.",
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             },
             "open_questions": [
                 "BA hlm. 39 juga memuat kriteria gagal napas akut pada gagal napas kronik; belum ada aturannya (kode ICD tidak disebut)."
@@ -261,7 +271,9 @@
                 "reference": "BA hlm. 42",
                 "origin_note": "rule_ba_2019.pdf, Sepsis",
                 "verified_against_original": true,
-                "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final. Teks BA: 'minimal 2 keadaan' dari 4 butir; butir 4 memuat leukositosis dan kultur darah wajib."
+                "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final. Teks BA: 'minimal 2 keadaan' dari 4 butir; butir 4 memuat leukositosis dan kultur darah wajib.",
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             },
             "open_questions": [
                 "Aturan di-encode mengikuti teks BA: 2 dari 4 butir, kultur darah hanya wajib bila butir 4 dipakai. Hasil di rule_ba_2019.pdf ('dapat ditemukan dari lab mikrobiologi/leukositosis') bisa berarti kultur selalu wajib. Konfirmasi ke ahli koding.",
@@ -302,7 +314,9 @@
                 "reference": "Kategori I11.0",
                 "origin_note": "rule_ba_2019.pdf, Heart Failure dengan Hipertensi",
                 "verified_against_original": false,
-                "verification_note": "Tidak ditemukan di OCR BA; berasal dari ICD-10 per rule_ba_2019.pdf."
+                "verification_note": "Tidak ditemukan di OCR BA; berasal dari ICD-10 per rule_ba_2019.pdf.",
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             },
             "open_questions": [
                 "Aturan ini hanya menandai I50.- yang muncul bersama I10. Apakah I50.- boleh tetap dikode bersama I11.0 sebagai kode tambahan perlu dikonfirmasi ke ahli koding."
@@ -353,7 +367,9 @@
                 "reference": "Catatan pada A16",
                 "origin_note": "rule_ba_2019.pdf, Pneumonia dan Efusi Pleura pada TB Paru",
                 "verified_against_original": false,
-                "verification_note": "BA hlm. 1 & 4 (OCR): pneumonia TB sudah termasuk A16.2. Efusi pleura tidak ditemukan di OCR; cek manual."
+                "verification_note": "BA hlm. 1 & 4 (OCR): pneumonia TB sudah termasuk A16.2. Efusi pleura tidak ditemukan di OCR; cek manual.",
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             }
         },
         {
@@ -405,7 +421,9 @@
                 "reference": "BA hlm. 8 (butir 43)",
                 "origin_note": "rule_ba_2019.pdf, D56 Beta Thalassemia",
                 "verified_against_original": true,
-                "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final. D56.1 utama, kelasi besi, product batch obat, 1x/bulan (Permenkes 52/2016) cocok."
+                "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final. D56.1 utama, kelasi besi, product batch obat, 1x/bulan (Permenkes 52/2016) cocok.",
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             }
         },
         {
@@ -507,7 +525,9 @@
                 "origin_note": "rule_ba_2019.pdf, Pneumonia",
                 "verified_against_original": true,
                 "verification_note": "Dicek visual hlm. 36: kriteria cocok.",
-                "year": 2019
+                "year": 2019,
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             },
             "open_questions": [
                 "rule_ba_2019.pdf menyebut hasil mikrobiologi bakteremia pada pasien dewasa; BA hlm. 36 tidak mensyaratkannya, jadi tidak dijadikan kriteria wajib.",
@@ -605,7 +625,9 @@
                 "origin_note": "rule_ba_2019.pdf, Respiratory Failure Kronis",
                 "verified_against_original": true,
                 "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final.",
-                "year": 2019
+                "year": 2019,
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             },
             "open_questions": [
                 "Keempat kriteria BGA idealnya dari satu pengambilan sampel; engine saat ini menilai tiap kriteria terpisah (aggregate=any).",
@@ -649,7 +671,9 @@
                 "origin_note": "rule_ba_2019.pdf, Infark Cerebri",
                 "verified_against_original": true,
                 "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final.",
-                "year": 2019
+                "year": 2019,
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             },
             "open_questions": [
                 "Kode saran (I61.-, I64) adalah usulan; BA hanya menyebut I63.- bila CT scan (+) infark."
@@ -688,7 +712,9 @@
                 "origin_note": "rule_ba_2019.pdf, Abses Hati",
                 "verified_against_original": false,
                 "verification_note": "Tidak ditemukan di OCR BA; cek manual apakah aturan ini dari BA atau sumber lain.",
-                "year": 2019
+                "year": 2019,
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             }
         },
         {
@@ -735,7 +761,9 @@
                 "origin_note": "rule_ba_2019.pdf, Anemia (RI)",
                 "verified_against_original": true,
                 "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final.",
-                "year": 2019
+                "year": 2019,
+                "reconciliation_status": "disputed",
+                "reconciliation_note": "Terdapat perbedaan sumber atau penafsiran yang belum diselesaikan; lihat verification_note dan open_questions."
             },
             "open_questions": [
                 "BA hlm. 38 memuat dua jalur terpisah: (1) komplikasi penyakit utama yang memerlukan transfusi dan eritropoetin, (2) anemia gravis Hb <8 pada penyakit kronik. rule_ba_2019.pdf menggabungkan Hb <8 DAN transfusi, lebih ketat dari BA. Tetapkan logika (AND/OR) dan apakah eritropoetin dihitung."
@@ -781,7 +809,9 @@
                 "origin_note": "rule_ba_2019.pdf, Ascites",
                 "verified_against_original": true,
                 "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final.",
-                "year": 2019
+                "year": 2019,
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             },
             "open_questions": [
                 "BA: pada kasus CKD, asites dapat menjadi diagnosis sekunder dengan diagnosis utama CKD; belum dimodelkan.",
@@ -861,7 +891,9 @@
                 "origin_note": "rule_ba_2019.pdf no. 1 (bagian kosong); diisi dari teks BA",
                 "verified_against_original": true,
                 "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final.",
-                "year": 2019
+                "year": 2019,
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             },
             "open_questions": [
                 "Bagian Efusi Pleura di rule_ba_2019.pdf kosong; kriteria diambil dari BA. Efusi 'minimal' (<10 mm / <100 ml) dan lebih dari minimal sama-sama diterima, jadi tidak dievaluasi terpisah."
@@ -914,7 +946,9 @@
                 "reference": "no. 6",
                 "origin_note": "rule_ba_2019.pdf, Prosedur Tindakan Operasi",
                 "verified_against_original": false,
-                "verification_note": "Bersifat prosedur verifikasi, bukan pasal BA."
+                "verification_note": "Bersifat prosedur verifikasi, bukan pasal BA.",
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             },
             "open_questions": [
                 "Butuh langkah pencocokan: kamus nama tindakan -> kode ICD-9-CM untuk mengisi operation.coded_procedure_consistent. Belum dibuat; tanpa itu hasilnya selalu REVIEW.",
@@ -997,7 +1031,9 @@
                 "origin_note": "rule_ba_2019.pdf, Z51.1",
                 "verified_against_original": false,
                 "verification_note": "TIDAK COCOK dengan BA 2019 hlm. 27 butir 151 (dicek visual): kemoterapi oral -> Z51.1 utama DAN kode neoplasma sebagai diagnosis sekunder.",
-                "year": 2021
+                "year": 2021,
+                "reconciliation_status": "disputed",
+                "reconciliation_note": "Terdapat perbedaan sumber atau penafsiran yang belum diselesaikan; lihat verification_note dan open_questions."
             },
             "open_questions": [
                 "Untuk kemoterapi oral, BA 2019 meminta neoplasma sebagai diagnosis sekunder, sedangkan rule_ba_2019.pdf (Permenkes 26/2021) melarangnya. Tetapkan regulasi yang berlaku untuk tanggal klaim; bila perlu pakai effective_from/effective_to.",
@@ -1086,7 +1122,9 @@
                 "origin_note": "rule_ba_2019.pdf, Z09.0",
                 "verified_against_original": false,
                 "verification_note": "Tidak ditemukan di OCR BA (BA hanya membahas Z09.8/Z09.4).",
-                "year": 2021
+                "year": 2021,
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             },
             "open_questions": [
                 "Syarat 'post operasi tanpa angkat jahitan' ditafsirkan sebagai: kunjungan bukan angkat jahitan.",
@@ -1157,7 +1195,9 @@
                 "origin_note": "rule_ba_2019.pdf, Endoscopy",
                 "verified_against_original": false,
                 "verification_note": "Bukan dari BA 2019.",
-                "year": 2026
+                "year": 2026,
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             },
             "open_questions": [
                 "Aturan hanya terpicu bila 21.21 atau 22.19 sudah dikode; endoskopi yang dikode dengan kode lain tidak tertangkap."
@@ -1257,7 +1297,9 @@
                 "reference": "Z50.-",
                 "origin_note": "rule_ba_2019.pdf, Rehabilitasi",
                 "verified_against_original": false,
-                "verification_note": "Bukan dari BA 2019 (BA hanya membahas rehabilitasi psikososial)."
+                "verification_note": "Bukan dari BA 2019 (BA hanya membahas rehabilitasi psikososial).",
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             }
         },
         {
@@ -1299,7 +1341,9 @@
                 "origin_note": "rule_ba_2019.pdf, Anemia (RJ)",
                 "verified_against_original": true,
                 "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final. Anemia pada keganasan -> D63.0.",
-                "year": 2019
+                "year": 2019,
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             }
         },
         {
@@ -1334,7 +1378,9 @@
                 "origin_note": "rule_ba_2019.pdf, Anemia (RJ)",
                 "verified_against_original": true,
                 "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final. Anemia pada penyakit kronis -> D63.8; saat ini hanya CKD yang dideteksi.",
-                "year": 2019
+                "year": 2019,
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             }
         },
         {
@@ -1369,7 +1415,9 @@
                 "origin_note": "rule_ba_2019.pdf, Anemia (RJ)",
                 "verified_against_original": true,
                 "verification_note": "Dicocokkan dengan OCR file scan BA (51 hlm); OCR tidak sempurna, cek visual sebelum dianggap final. Anemia perdarahan akut -> D62.",
-                "year": 2019
+                "year": 2019,
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             }
         },
         {
@@ -1405,7 +1453,9 @@
                 "origin_note": "rule_ba_2019.pdf, Keloid",
                 "verified_against_original": false,
                 "verification_note": "Perpres tidak ada di file proyek. BA hlm. 37 memuat prinsip serupa untuk skin graft estetik.",
-                "year": 2018
+                "year": 2018,
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             },
             "open_questions": [
                 "Definisi 'gangguan fungsi' (nyeri, gatal berat, kontraktur, gangguan gerak) perlu ditetapkan klinisi untuk ekstraksi."
@@ -1525,7 +1575,9 @@
                 "reference": "88.91-88.95",
                 "origin_note": "rule_ba_2019.pdf, MRI",
                 "verified_against_original": false,
-                "verification_note": "Tidak dicek terhadap BA."
+                "verification_note": "Tidak dicek terhadap BA.",
+                "reconciliation_status": "unverified",
+                "reconciliation_note": "Belum direkonsiliasi secara menyeluruh dengan dokumen BA 2019 dan rule RSDS."
             },
             "open_questions": [
                 "Aturan hanya terpicu bila salah satu kode 88.91-88.95 sudah dikode."

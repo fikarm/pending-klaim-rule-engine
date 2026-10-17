@@ -28,6 +28,17 @@
         "updated_at": {
           "type": "string",
           "format": "date"
+        },
+        "lineage": {
+          "type": "object",
+          "required": ["upstream_document", "intermediate_document"],
+          "additionalProperties": false,
+          "properties": {
+            "upstream_document": { "type": "string" },
+            "intermediate_document": { "type": "string" },
+            "schema_artifact": { "type": "string" },
+            "rule_artifact": { "type": "string" }
+          }
         }
       }
     },
@@ -403,6 +414,14 @@
         "verification_note": {
           "type": "string",
           "description": "Hasil pencocokan dengan teks BA (hlm., metode, dan ketidakcocokan bila ada)"
+        },
+        "reconciliation_status": {
+          "enum": ["verified", "unverified", "disputed"],
+          "description": "Status rekonsiliasi terhadap rantai sumber aturan"
+        },
+        "reconciliation_note": {
+          "type": "string",
+          "description": "Catatan pemeriksaan turunan aturan terhadap BA dan dokumen RSDS"
         }
       }
     }

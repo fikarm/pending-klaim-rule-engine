@@ -68,8 +68,7 @@ def tri_at_least(n: int, vals: list) -> Optional[bool]:
 # --------------------------------------------------------------------------------------
 @dataclass
 class Options:
-    # Hanya aturan berstatus ini yang dijalankan. Tambahkan "needs_clarification" / "draft"
-    # untuk mode bayangan (shadow) saat menguji aturan yang belum final.
+    # Status di luar daftar tetap ditampilkan sebagai REVIEW bila trigger cocok.
     include_statuses: tuple = ("active",)
     # Fakta hasil LLM di bawah ambang ini diabaikan dan hasilnya jadi REVIEW.
     min_confidence: float = 0.7
@@ -97,11 +96,14 @@ def code_matches(code: str, pattern: str) -> bool:
 # Konteks: akses fakta (header klaim diperlakukan sebagai fakta semu)
 # --------------------------------------------------------------------------------------
 class Context:
-    def __init__(self, doc: dict, opts: Options):
+    def __init__(
+        self, doc: dict, opts: Options, rule_lineage: Optional[dict] = None
+    ):
         self.doc = doc
         self.claim = doc["claim"]
         self.facts = doc.get("facts", [])
         self.opts = opts
+        self.rule_lineage = copy.deepcopy(rule_lineage or {})
 
     def _header_facts(self, fld: str) -> Optional[list]:
         c = self.claim
@@ -274,6 +276,11 @@ def _evidence(f: dict) -> dict:
         "document_id": p.get("document_id"),
         "text_span": p.get("text_span"),
     }
+    if f.get("conflict_details"):
+        raw["conflicts"] = [
+            {"value": detail["value"], "provenance": detail["provenance"]}
+            for detail in f["conflict_details"]
+        ]
     return {k: v for k, v in raw.items() if v is not None and v != []}
 
 
@@ -458,11 +465,9 @@ def iter_conditions(n: dict) -> Iterator[dict]:
 # --------------------------------------------------------------------------------------
 # Evaluasi aturan & klaim
 # --------------------------------------------------------------------------------------
-def _applicability(rule: dict, ctx: Context) -> tuple:
+def _applicability(rule: dict, ctx: Context, diagnosis_index: Optional[int] = None) -> tuple:
     """Kembalikan (kode_yang_cocok, None) bila berlaku, atau (None, alasan) bila tidak."""
-    claim, opts = ctx.claim, ctx.opts
-    if rule["status"] not in opts.include_statuses:
-        return None, f"status aturan '{rule['status']}' tidak dijalankan"
+    claim = ctx.claim
     if rule["scope"] != "ALL" and rule["scope"] != claim["encounter_type"]:
         return (
             None,
@@ -481,7 +486,10 @@ def _applicability(rule: dict, ctx: Context) -> tuple:
     trig = rule["trigger"]
     pos = trig.get("position", "any")
     if trig.get("code_system", "ICD10") == "ICD10":
-        items = [(d["code"], d["position"]) for d in claim.get("diagnoses", [])]
+        diagnoses = claim.get("diagnoses", [])
+        if diagnosis_index is not None:
+            diagnoses = [diagnoses[diagnosis_index]]
+        items = [(d["code"], d["position"]) for d in diagnoses]
     else:
         items = [(p["code"], "any") for p in claim.get("procedures", [])]
     matched = [
@@ -495,19 +503,46 @@ def _applicability(rule: dict, ctx: Context) -> tuple:
     return matched, None
 
 
-def evaluate_rule(rule: dict, ctx: Context) -> dict:
+def evaluate_rule(
+    rule: dict, ctx: Context, diagnosis_index: Optional[int] = None
+) -> dict:
     src = rule.get("source", {})
+    reconciliation_status = src.get("reconciliation_status")
+    source_verified = bool(src.get("verified_against_original"))
+    effective_reconciliation = reconciliation_status or "unverified"
+    reconciled = effective_reconciliation == "verified"
     base = {
         "rule_id": rule["id"],
         "title": rule["title"],
         "type": rule["type"],
         "rule_status": rule["status"],
         "source": f"{src.get('document', '?')} {src.get('year', '')}".strip(),
-        "verified_against_original": bool(src.get("verified_against_original")),
+        "verified_against_original": source_verified,
+        "source_details": {
+            **copy.deepcopy(src),
+            "reconciliation_status": effective_reconciliation,
+            "lineage": ctx.rule_lineage,
+        },
     }
-    matched, why = _applicability(rule, ctx)
+    matched, why = _applicability(rule, ctx, diagnosis_index)
     if matched is None:
         return {**base, "status": "NOT_APPLICABLE", "message": why}
+
+    review_reasons = []
+    if rule["status"] not in ctx.opts.include_statuses:
+        review_reasons.append("status aturan tidak termasuk dalam status evaluasi yang dipilih")
+    if rule["status"] != "active":
+        review_reasons.append(f"status aturan '{rule['status']}' belum aktif untuk keputusan final")
+    if not source_verified:
+        review_reasons.append("aturan belum diverifikasi terhadap dokumen sumber asli")
+    if reconciliation_status == "disputed":
+        review_reasons.append("terdapat perbedaan sumber aturan yang belum direkonsiliasi")
+    elif reconciliation_status == "unverified":
+        review_reasons.append("aturan belum direkonsiliasi terhadap rantai sumber")
+    elif not reconciled:
+        review_reasons.append("status rekonsiliasi aturan belum terverifikasi")
+    if rule.get("open_questions"):
+        review_reasons.append("aturan memiliki pertanyaan terbuka yang belum diselesaikan")
 
     parts, comps = {}, []
     for key in ("evidence", "treatment", "extra_conditions"):
@@ -521,13 +556,39 @@ def evaluate_rule(rule: dict, ctx: Context) -> dict:
         comps.append(tri_not(res))
         parts["violation_when"] = tr
 
+    def missing_fields(trace: Any) -> list[str]:
+        if not isinstance(trace, dict):
+            return []
+        if (
+            trace.get("kind") == "condition"
+            and trace.get("result") == "U"
+            and trace.get("reason", "").startswith(
+                ("tidak terdokumentasi", "hanya ada fakta ber-confidence rendah")
+            )
+        ):
+            return [trace["field"]]
+        return [
+            field_name
+            for child in trace.values()
+            for field_name in (
+                missing_fields(child)
+                if isinstance(child, (dict, list))
+                else []
+            )
+        ]
+
     tri = tri_all(comps) if comps else U
     status = {T: "PASS", F: "FAIL", U: "REVIEW"}[tri]
+    missing_fields_found = list(
+        dict.fromkeys(field_name for trace in parts.values() for field_name in missing_fields(trace))
+    )
 
     available = set(ctx.claim.get("documents_available", []))
     missing = [d for d in rule.get("required_documents", []) if d not in available]
     if missing and status == "PASS":
         status = "FAIL" if ctx.opts.missing_document_policy == "fail" else "REVIEW"
+    if review_reasons:
+        status = "REVIEW"
 
     outcome = rule["outcome"]
     message = {
@@ -540,10 +601,14 @@ def evaluate_rule(rule: dict, ctx: Context) -> dict:
         message = "Aturan tidak punya kriteria; perlu diperbaiki."
     if missing:
         message += " Dokumen belum ada: " + ", ".join(missing) + "."
+    if review_reasons:
+        message += " Perlu tinjauan: " + "; ".join(review_reasons) + "."
 
     actions = []
     if status == "FAIL":
         actions.append(outcome.get("action_on_fail", "flag"))
+    if status == "REVIEW":
+        actions.append("manual_review")
     if missing:
         actions.append("request_document")
     severity = {
@@ -560,23 +625,146 @@ def evaluate_rule(rule: dict, ctx: Context) -> dict:
         "actions": list(dict.fromkeys(actions)),
         "suggest_codes": outcome.get("suggest_codes", []) if status == "FAIL" else [],
         "missing_documents": missing,
+        "missing_fields": missing_fields_found,
         "trace": parts,
     }
 
 
+def validate_claim_document(doc: dict) -> None:
+    """Validate the claim and evidence fields consumed by the evaluator."""
+    if not isinstance(doc, dict):
+        raise ValueError("claim document must be an object")
+    claim = doc.get("claim")
+    if not isinstance(claim, dict):
+        raise ValueError("claim must be an object")
+    if not isinstance(claim.get("claim_id"), str) or not claim["claim_id"].strip():
+        raise ValueError("claim.claim_id must be a non-empty string")
+    if claim.get("encounter_type") not in {"RI", "RJ"}:
+        raise ValueError("claim.encounter_type must be 'RI' or 'RJ'")
+
+    diagnoses = claim.get("diagnoses")
+    if not isinstance(diagnoses, list):
+        raise ValueError("claim.diagnoses must be an array")
+    for index, diagnosis in enumerate(diagnoses):
+        path = f"claim.diagnoses[{index}]"
+        if not isinstance(diagnosis, dict):
+            raise ValueError(f"{path} must be an object")
+        if not isinstance(diagnosis.get("code"), str) or not diagnosis["code"].strip():
+            raise ValueError(f"{path}.code must be a non-empty string")
+        if diagnosis.get("position") not in {"primary", "secondary"}:
+            raise ValueError(f"{path}.position must be 'primary' or 'secondary'")
+        sequence = diagnosis.get("sequence")
+        if sequence is not None and (
+            not isinstance(sequence, int) or isinstance(sequence, bool) or sequence < 1
+        ):
+            raise ValueError(f"{path}.sequence must be a positive integer")
+
+    documents = claim.get("documents_available", [])
+    if not isinstance(documents, list) or any(not isinstance(item, str) for item in documents):
+        raise ValueError("claim.documents_available must be an array of strings")
+
+    procedures = claim.get("procedures", [])
+    if not isinstance(procedures, list):
+        raise ValueError("claim.procedures must be an array")
+    for index, procedure in enumerate(procedures):
+        if not isinstance(procedure, dict) or not isinstance(procedure.get("code"), str) or not procedure["code"].strip():
+            raise ValueError(f"claim.procedures[{index}].code must be a non-empty string")
+
+    facts = doc.get("facts", [])
+    if not isinstance(facts, list):
+        raise ValueError("facts must be an array")
+    valid_kinds = {"measurement", "category", "flag", "category_list", "text", "event"}
+    valid_statuses = {"present", "absent", "conflicting"}
+    valid_methods = {"db_query", "llm_extraction", "rule_derived", "manual_entry"}
+    for index, fact in enumerate(facts):
+        path = f"facts[{index}]"
+        if not isinstance(fact, dict):
+            raise ValueError(f"{path} must be an object")
+        if not isinstance(fact.get("field"), str) or not fact["field"].strip():
+            raise ValueError(f"{path}.field must be a non-empty string")
+        if fact.get("kind") not in valid_kinds:
+            raise ValueError(f"{path}.kind is unsupported")
+        status = fact.get("status")
+        if status not in valid_statuses:
+            raise ValueError(f"{path}.status must be present, absent, or conflicting")
+        if status == "present" and "value" not in fact:
+            raise ValueError(f"{path}.value is required when status is present")
+        provenance = fact.get("provenance")
+        if not isinstance(provenance, dict) or provenance.get("method") not in valid_methods:
+            raise ValueError(f"{path}.provenance.method is missing or unsupported")
+        confidence = fact.get("confidence")
+        if confidence is not None and (
+            not isinstance(confidence, (int, float))
+            or isinstance(confidence, bool)
+            or not 0 <= confidence <= 1
+        ):
+            raise ValueError(f"{path}.confidence must be between 0 and 1")
+        if status == "conflicting":
+            details = fact.get("conflict_details")
+            if not isinstance(details, list) or len(details) < 2:
+                raise ValueError(f"{path}.conflict_details must contain at least two sources")
+            for detail_index, detail in enumerate(details):
+                detail_provenance = detail.get("provenance") if isinstance(detail, dict) else None
+                if (
+                    not isinstance(detail, dict)
+                    or "value" not in detail
+                    or not isinstance(detail_provenance, dict)
+                    or detail_provenance.get("method") not in valid_methods
+                ):
+                    raise ValueError(
+                        f"{path}.conflict_details[{detail_index}] must include value and valid provenance"
+                    )
+
+
 def evaluate_claim(ruleset: dict, doc: dict, options: Optional[Options] = None) -> dict:
+    validate_claim_document(doc)
     opts = options or Options()
     n_before = len(doc.get("facts", []))
     doc = derive_facts(doc, opts)
     added_by_engine = doc["facts"][n_before:]  # derive_facts hanya menambah di akhir
-    ctx = Context(doc, opts)
+    ctx = Context(doc, opts, ruleset.get("ruleset", {}).get("lineage"))
     results = [evaluate_rule(r, ctx) for r in ruleset["rules"]]
+    diagnosis_results = []
+    diagnosis_rules = [
+        rule
+        for rule in ruleset["rules"]
+        if rule["trigger"].get("code_system", "ICD10") == "ICD10"
+    ]
+    for index, diagnosis in enumerate(ctx.claim.get("diagnoses", [])):
+        rule_results = [
+            result
+            for rule in diagnosis_rules
+            if (result := evaluate_rule(rule, ctx, index))["status"]
+            != "NOT_APPLICABLE"
+        ]
+        if any(result["status"] == "FAIL" for result in rule_results):
+            status = "FAIL"
+            message = "Setidaknya satu aturan diagnosis yang cocok dinilai tidak sesuai."
+        elif any(result["status"] == "REVIEW" for result in rule_results):
+            status = "REVIEW"
+            message = "Sedikitnya satu aturan diagnosis yang cocok memerlukan tinjauan manual."
+        elif rule_results:
+            status = "PASS"
+            message = "Semua aturan diagnosis yang cocok dinilai sesuai."
+        else:
+            status = "NOT_APPLICABLE"
+            message = "Tidak ada aturan diagnosis yang cocok dengan kode, layanan, dan posisi ini."
+        diagnosis_results.append(
+            {
+                "diagnosis_index": index,
+                "diagnosis": copy.deepcopy(diagnosis),
+                "status": status,
+                "message": message,
+                "rule_results": rule_results,
+            }
+        )
     counts = Counter(r["status"] for r in results)
-    if counts["FAIL"]:
+    diagnosis_counts = Counter(r["status"] for r in diagnosis_results)
+    if diagnosis_counts["FAIL"]:
         overall = "FAIL"
-    elif counts["REVIEW"]:
+    elif diagnosis_counts["REVIEW"]:
         overall = "REVIEW"
-    elif counts["PASS"]:
+    elif diagnosis_counts["PASS"]:
         overall = "PASS"
     else:
         overall = "NOT_APPLICABLE"
@@ -584,14 +772,20 @@ def evaluate_claim(ruleset: dict, doc: dict, options: Optional[Options] = None) 
         "claim_id": doc["claim"]["claim_id"],
         "overall": overall,
         "counts": dict(counts),
+        "diagnosis_counts": dict(diagnosis_counts),
         "results": results,
+        "diagnosis_results": diagnosis_results,
         "derived_facts": added_by_engine,
         "unverified_rules_used": sorted(
             {
                 r["rule_id"]
                 for r in results
                 if r["status"] != "NOT_APPLICABLE"
-                and not r["verified_against_original"]
+                and (
+                    not r["verified_against_original"]
+                    or r["source_details"].get("reconciliation_status")
+                    in {"unverified", "disputed"}
+                )
             }
         ),
     }
@@ -662,8 +856,22 @@ def lint_rules(ruleset: dict, catalog: dict) -> list:
                 rid,
                 "violation_when digabung dengan evidence/treatment; pastikan memang disengaja",
             )
-        if r["status"] == "active" and not r["source"].get("verified_against_original"):
-            add("warning", rid, "aturan aktif tetapi belum diverifikasi ke teks resmi")
+        source = r["source"]
+        reconciliation = source.get("reconciliation_status")
+        if reconciliation not in {None, "verified", "unverified", "disputed"}:
+            add("error", rid, f"status rekonsiliasi tidak dikenal: {reconciliation}")
+        if r["status"] == "active" and (
+            not source.get("verified_against_original")
+            or reconciliation != "verified"
+            or r.get("open_questions")
+        ):
+            state = reconciliation or "unverified"
+            add(
+                "warning",
+                rid,
+                f"aturan aktif memerlukan tinjauan sumber (rekonsiliasi={state}, "
+                f"pertanyaan_terbuka={len(r.get('open_questions', []))})",
+            )
         known_docs = set(catalog.get("document_types", []))
         for d in r.get("required_documents", []):
             if known_docs and d not in known_docs:
@@ -720,20 +928,27 @@ def _load(path: str) -> dict:
 
 def _print_report(res: dict) -> None:
     print(
-        f"Klaim {res['claim_id']}: hasil keseluruhan = {res['overall']}  {res['counts']}"
+        f"Klaim {res['claim_id']}: hasil diagnosis = {res['overall']}  "
+        f"{res['diagnosis_counts']}"
     )
-    for r in res["results"]:
-        if r["status"] == "NOT_APPLICABLE":
-            continue
+    for diagnosis_result in res["diagnosis_results"]:
+        diagnosis = diagnosis_result["diagnosis"]
         print(
-            f"\n[{r['status']}] {r['rule_id']} - {r['title']}  (sumber: {r['source']}"
-            f"{'' if r['verified_against_original'] else ', BELUM diverifikasi'})"
+            f"\n[{diagnosis_result['status']}] {diagnosis['code']} "
+            f"({diagnosis['position']})"
         )
-        print(f"  {r['message']}")
-        if r.get("suggest_codes"):
-            print(f"  saran kode: {', '.join(r['suggest_codes'])}")
-        if r.get("actions"):
-            print(f"  aksi: {', '.join(r['actions'])}")
+        print(f"  {diagnosis_result['message']}")
+        for rule_result in diagnosis_result["rule_results"]:
+            print(
+                f"  {rule_result['rule_id']} - {rule_result['title']} "
+                f"(sumber: {rule_result['source']}; "
+                f"rekonsiliasi: {rule_result['source_details'].get('reconciliation_status', 'unverified')})"
+            )
+            print(f"    {rule_result['message']}")
+            if rule_result.get("suggest_codes"):
+                print(f"    saran kode: {', '.join(rule_result['suggest_codes'])}")
+            if rule_result.get("actions"):
+                print(f"    aksi: {', '.join(rule_result['actions'])}")
     if res["derived_facts"]:
         print(f"\nFakta turunan: {[f['field'] for f in res['derived_facts']]}")
 
@@ -744,7 +959,12 @@ def main(argv: Optional[list] = None) -> int:
     ev = sub.add_parser("evaluate", help="evaluasi satu klaim")
     ev.add_argument("--rules", required=True)
     ev.add_argument("--facts", required=True)
-    ev.add_argument("--include-statuses", nargs="+", default=["active"])
+    ev.add_argument(
+        "--include-statuses",
+        nargs="+",
+        default=["active"],
+        help="status yang dapat dievaluasi; aturan cocok di luar daftar tetap REVIEW",
+    )
     ev.add_argument("--min-confidence", type=float, default=0.7)
     ev.add_argument(
         "--missing-doc-policy", choices=["review", "fail"], default="review"

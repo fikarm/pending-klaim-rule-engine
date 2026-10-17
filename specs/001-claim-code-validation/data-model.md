@@ -61,8 +61,19 @@ Represents one validation rule.
 | `extra_conditions` | `Node` | Additional qualifiers |
 | `violation_when` | `Node` | Inverse or negative condition |
 | `required_documents` | array of string | Mandatory documents |
-| `source` | object | Reference document and verification metadata |
+| `source` | object | Reference document, original-source verification, and reconciliation status (`verified`, `unverified`, `disputed`) |
 | `outcome` | object | Pass/fail/review messages and suggested actions |
+
+### RuleSetLineage
+
+Ruleset-level provenance records the derivation chain shared by the rule data.
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `upstream_document` | string | BA 2019 PDF path |
+| `intermediate_document` | string | RSDS-derived rules PDF path |
+| `schema_artifact` | string | JSON rule schema path |
+| `rule_artifact` | string | JSON ruleset path |
 
 ### RuleEvaluationResult
 
@@ -75,11 +86,25 @@ The result emitted for one diagnosis-rule pair.
 | `message` | string | Human-readable explanation |
 | `matched_codes` | array of string | Trigger codes that matched |
 | `missing_documents` | array of string | Required but absent documents |
+| `missing_fields` | array of string | Evidence fields not documented or below the confidence threshold |
 | `suggest_codes` | array of string | Recommended substitutions for code-selection rules |
 | `actions` | array of string | Suggested next steps |
 | `trace` | object | Node-by-node analysis details |
 | `source` | string | Rule source label |
 | `verified_against_original` | boolean | Whether the rule has been checked against the source |
+| `source_details` | object | Source metadata plus ruleset lineage and reconciliation note |
+
+### DiagnosisEvaluationResult
+
+Represents the ordered aggregate result for one claim diagnosis.
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `diagnosis_index` | integer | Zero-based index in the original diagnosis list |
+| `diagnosis` | `DiagnosisEntry` | Original entry; never rewritten |
+| `status` | `PASS` / `FAIL` / `REVIEW` / `NOT_APPLICABLE` | Aggregate status of matching diagnosis rules |
+| `message` | string | Summary reason |
+| `rule_results` | array of `RuleEvaluationResult` | Matching rules for this diagnosis |
 
 ## Relationships
 
@@ -87,6 +112,7 @@ The result emitted for one diagnosis-rule pair.
 - One `DiagnosisEntry` can match many rule triggers depending on code and position.
 - Many `SupportingFact` records support one or many rule evaluations.
 - Each `RuleDefinition` produces at most one `RuleEvaluationResult` for a claim/diagnosis evaluation.
+- Each claim diagnosis produces exactly one ordered `DiagnosisEvaluationResult`; ICD-9-CM procedure rules are not included in this v1 diagnosis summary.
 - `RuleEvaluationResult` is derived by evaluating logical `Node` expressions over the supporting facts in the claim.
 
 ## Validation Rules and Behavior
@@ -106,7 +132,8 @@ The result emitted for one diagnosis-rule pair.
 ### Rule status constraints
 
 - Only rules with `status: active` are included in the default production evaluation set.
-- Draft or unverified rules may still be evaluated in a shadow mode, but they are flagged as requiring review.
+- A final `PASS` or `FAIL` requires an active rule, `verified_against_original: true`, `reconciliation_status: verified`, and no unresolved `open_questions`.
+- A matching draft, unverified, disputed, legacy rule without reconciliation metadata, or rule with open questions yields `REVIEW`.
 
 ## State Transitions
 
