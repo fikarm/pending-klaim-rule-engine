@@ -1,0 +1,703 @@
+[
+    {
+        "label": "runpy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "runpy",
+        "description": "runpy",
+        "detail": "runpy",
+        "documentation": {}
+    },
+    {
+        "label": "annotations",
+        "importPath": "__future__",
+        "description": "__future__",
+        "isExtraImport": true,
+        "detail": "__future__",
+        "documentation": {}
+    },
+    {
+        "label": "annotations",
+        "importPath": "__future__",
+        "description": "__future__",
+        "isExtraImport": true,
+        "detail": "__future__",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "site",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "site",
+        "description": "site",
+        "detail": "site",
+        "documentation": {}
+    },
+    {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
+        "label": "argparse",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "argparse",
+        "description": "argparse",
+        "detail": "argparse",
+        "documentation": {}
+    },
+    {
+        "label": "copy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "copy",
+        "description": "copy",
+        "detail": "copy",
+        "documentation": {}
+    },
+    {
+        "label": "fnmatch",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "fnmatch",
+        "description": "fnmatch",
+        "detail": "fnmatch",
+        "documentation": {}
+    },
+    {
+        "label": "json",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "json",
+        "description": "json",
+        "detail": "json",
+        "documentation": {}
+    },
+    {
+        "label": "Counter",
+        "importPath": "collections",
+        "description": "collections",
+        "isExtraImport": true,
+        "detail": "collections",
+        "documentation": {}
+    },
+    {
+        "label": "dataclass",
+        "importPath": "dataclasses",
+        "description": "dataclasses",
+        "isExtraImport": true,
+        "detail": "dataclasses",
+        "documentation": {}
+    },
+    {
+        "label": "field",
+        "importPath": "dataclasses",
+        "description": "dataclasses",
+        "isExtraImport": true,
+        "detail": "dataclasses",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Iterator",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "unittest",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "unittest",
+        "description": "unittest",
+        "detail": "unittest",
+        "documentation": {}
+    },
+    {
+        "label": "Path",
+        "importPath": "pathlib",
+        "description": "pathlib",
+        "isExtraImport": true,
+        "detail": "pathlib",
+        "documentation": {}
+    },
+    {
+        "label": "Context",
+        "importPath": "klaim_engine",
+        "description": "klaim_engine",
+        "isExtraImport": true,
+        "detail": "klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "Options",
+        "importPath": "klaim_engine",
+        "description": "klaim_engine",
+        "isExtraImport": true,
+        "detail": "klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "derive_facts",
+        "importPath": "klaim_engine",
+        "description": "klaim_engine",
+        "isExtraImport": true,
+        "detail": "klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "eval_node",
+        "importPath": "klaim_engine",
+        "description": "klaim_engine",
+        "isExtraImport": true,
+        "detail": "klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "evaluate_claim",
+        "importPath": "klaim_engine",
+        "description": "klaim_engine",
+        "isExtraImport": true,
+        "detail": "klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "lint_rules",
+        "importPath": "klaim_engine",
+        "description": "klaim_engine",
+        "isExtraImport": true,
+        "detail": "klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "tri_all",
+        "importPath": "klaim_engine",
+        "description": "klaim_engine",
+        "isExtraImport": true,
+        "detail": "klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "tri_any",
+        "importPath": "klaim_engine",
+        "description": "klaim_engine",
+        "isExtraImport": true,
+        "detail": "klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "tri_at_least",
+        "importPath": "klaim_engine",
+        "description": "klaim_engine",
+        "isExtraImport": true,
+        "detail": "klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "tri_not",
+        "importPath": "klaim_engine",
+        "description": "klaim_engine",
+        "isExtraImport": true,
+        "detail": "klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "bin_dir",
+        "kind": 5,
+        "importPath": ".venv.bin.activate_this",
+        "description": ".venv.bin.activate_this",
+        "peekOfCode": "bin_dir = os.path.dirname(abs_file)\nbase = bin_dir[: -len(\"bin\") - 1]  # strip away the bin part from the __file__, plus the path separator\n# prepend bin to PATH (this file is inside the bin directory)\nos.environ[\"PATH\"] = os.pathsep.join([bin_dir, *os.environ.get(\"PATH\", \"\").split(os.pathsep)])\nos.environ[\"VIRTUAL_ENV\"] = base  # virtual env is right above bin directory\nos.environ[\"VIRTUAL_ENV_PROMPT\"] = \"pending-klaim-rule-engine\" or os.path.basename(base)  # noqa: SIM222\n# add the virtual environments libraries to the host python import mechanism\nprev_length = len(sys.path)\nfor lib in \"../lib/python3.14/site-packages\".split(os.pathsep):\n    path = os.path.realpath(os.path.join(bin_dir, lib))",
+        "detail": ".venv.bin.activate_this",
+        "documentation": {}
+    },
+    {
+        "label": "base",
+        "kind": 5,
+        "importPath": ".venv.bin.activate_this",
+        "description": ".venv.bin.activate_this",
+        "peekOfCode": "base = bin_dir[: -len(\"bin\") - 1]  # strip away the bin part from the __file__, plus the path separator\n# prepend bin to PATH (this file is inside the bin directory)\nos.environ[\"PATH\"] = os.pathsep.join([bin_dir, *os.environ.get(\"PATH\", \"\").split(os.pathsep)])\nos.environ[\"VIRTUAL_ENV\"] = base  # virtual env is right above bin directory\nos.environ[\"VIRTUAL_ENV_PROMPT\"] = \"pending-klaim-rule-engine\" or os.path.basename(base)  # noqa: SIM222\n# add the virtual environments libraries to the host python import mechanism\nprev_length = len(sys.path)\nfor lib in \"../lib/python3.14/site-packages\".split(os.pathsep):\n    path = os.path.realpath(os.path.join(bin_dir, lib))\n    site.addsitedir(path)",
+        "detail": ".venv.bin.activate_this",
+        "documentation": {}
+    },
+    {
+        "label": "os.environ[\"PATH\"]",
+        "kind": 5,
+        "importPath": ".venv.bin.activate_this",
+        "description": ".venv.bin.activate_this",
+        "peekOfCode": "os.environ[\"PATH\"] = os.pathsep.join([bin_dir, *os.environ.get(\"PATH\", \"\").split(os.pathsep)])\nos.environ[\"VIRTUAL_ENV\"] = base  # virtual env is right above bin directory\nos.environ[\"VIRTUAL_ENV_PROMPT\"] = \"pending-klaim-rule-engine\" or os.path.basename(base)  # noqa: SIM222\n# add the virtual environments libraries to the host python import mechanism\nprev_length = len(sys.path)\nfor lib in \"../lib/python3.14/site-packages\".split(os.pathsep):\n    path = os.path.realpath(os.path.join(bin_dir, lib))\n    site.addsitedir(path)\nsys.path[:] = sys.path[prev_length:] + sys.path[0:prev_length]\nsys.real_prefix = sys.prefix",
+        "detail": ".venv.bin.activate_this",
+        "documentation": {}
+    },
+    {
+        "label": "os.environ[\"VIRTUAL_ENV\"]",
+        "kind": 5,
+        "importPath": ".venv.bin.activate_this",
+        "description": ".venv.bin.activate_this",
+        "peekOfCode": "os.environ[\"VIRTUAL_ENV\"] = base  # virtual env is right above bin directory\nos.environ[\"VIRTUAL_ENV_PROMPT\"] = \"pending-klaim-rule-engine\" or os.path.basename(base)  # noqa: SIM222\n# add the virtual environments libraries to the host python import mechanism\nprev_length = len(sys.path)\nfor lib in \"../lib/python3.14/site-packages\".split(os.pathsep):\n    path = os.path.realpath(os.path.join(bin_dir, lib))\n    site.addsitedir(path)\nsys.path[:] = sys.path[prev_length:] + sys.path[0:prev_length]\nsys.real_prefix = sys.prefix\nsys.prefix = base",
+        "detail": ".venv.bin.activate_this",
+        "documentation": {}
+    },
+    {
+        "label": "os.environ[\"VIRTUAL_ENV_PROMPT\"]",
+        "kind": 5,
+        "importPath": ".venv.bin.activate_this",
+        "description": ".venv.bin.activate_this",
+        "peekOfCode": "os.environ[\"VIRTUAL_ENV_PROMPT\"] = \"pending-klaim-rule-engine\" or os.path.basename(base)  # noqa: SIM222\n# add the virtual environments libraries to the host python import mechanism\nprev_length = len(sys.path)\nfor lib in \"../lib/python3.14/site-packages\".split(os.pathsep):\n    path = os.path.realpath(os.path.join(bin_dir, lib))\n    site.addsitedir(path)\nsys.path[:] = sys.path[prev_length:] + sys.path[0:prev_length]\nsys.real_prefix = sys.prefix\nsys.prefix = base",
+        "detail": ".venv.bin.activate_this",
+        "documentation": {}
+    },
+    {
+        "label": "prev_length",
+        "kind": 5,
+        "importPath": ".venv.bin.activate_this",
+        "description": ".venv.bin.activate_this",
+        "peekOfCode": "prev_length = len(sys.path)\nfor lib in \"../lib/python3.14/site-packages\".split(os.pathsep):\n    path = os.path.realpath(os.path.join(bin_dir, lib))\n    site.addsitedir(path)\nsys.path[:] = sys.path[prev_length:] + sys.path[0:prev_length]\nsys.real_prefix = sys.prefix\nsys.prefix = base",
+        "detail": ".venv.bin.activate_this",
+        "documentation": {}
+    },
+    {
+        "label": "sys.path[:]",
+        "kind": 5,
+        "importPath": ".venv.bin.activate_this",
+        "description": ".venv.bin.activate_this",
+        "peekOfCode": "sys.path[:] = sys.path[prev_length:] + sys.path[0:prev_length]\nsys.real_prefix = sys.prefix\nsys.prefix = base",
+        "detail": ".venv.bin.activate_this",
+        "documentation": {}
+    },
+    {
+        "label": "sys.real_prefix",
+        "kind": 5,
+        "importPath": ".venv.bin.activate_this",
+        "description": ".venv.bin.activate_this",
+        "peekOfCode": "sys.real_prefix = sys.prefix\nsys.prefix = base",
+        "detail": ".venv.bin.activate_this",
+        "documentation": {}
+    },
+    {
+        "label": "sys.prefix",
+        "kind": 5,
+        "importPath": ".venv.bin.activate_this",
+        "description": ".venv.bin.activate_this",
+        "peekOfCode": "sys.prefix = base",
+        "detail": ".venv.bin.activate_this",
+        "documentation": {}
+    },
+    {
+        "label": "Options",
+        "kind": 6,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "class Options:\n    # Hanya aturan berstatus ini yang dijalankan. Tambahkan \"needs_clarification\" / \"draft\"\n    # untuk mode bayangan (shadow) saat menguji aturan yang belum final.\n    include_statuses: tuple = (\"active\",)\n    # Fakta hasil LLM di bawah ambang ini diabaikan dan hasilnya jadi REVIEW.\n    min_confidence: float = 0.7\n    # Bila dokumen wajib belum ada padahal kriteria terpenuhi: \"review\" atau \"fail\".\n    # KEPUTUSAN KEBIJAKAN: sesuaikan dengan praktik verifikator Anda.\n    missing_document_policy: str = \"review\"\n    # Parameter turunan. None = jangan membuat fakta turunan (tidak menebak ambang).",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "Context",
+        "kind": 6,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "class Context:\n    def __init__(self, doc: dict, opts: Options):\n        self.doc = doc\n        self.claim = doc[\"claim\"]\n        self.facts = doc.get(\"facts\", [])\n        self.opts = opts\n    def _header_facts(self, fld: str) -> Optional[list]:\n        c = self.claim\n        if fld == \"claim.diagnoses\":\n            value, kind, unit = (",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "tri_all",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "def tri_all(vals: list) -> Optional[bool]:\n    if any(v is F for v in vals):\n        return F\n    if all(v is T for v in vals):\n        return T\n    return U\ndef tri_any(vals: list) -> Optional[bool]:\n    if any(v is T for v in vals):\n        return T\n    if all(v is F for v in vals):",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "tri_any",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "def tri_any(vals: list) -> Optional[bool]:\n    if any(v is T for v in vals):\n        return T\n    if all(v is F for v in vals):\n        return F\n    return U\ndef tri_not(v: Optional[bool]) -> Optional[bool]:\n    return U if v is U else (not v)\ndef tri_at_least(n: int, vals: list) -> Optional[bool]:\n    t = sum(1 for v in vals if v is T)",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "tri_not",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "def tri_not(v: Optional[bool]) -> Optional[bool]:\n    return U if v is U else (not v)\ndef tri_at_least(n: int, vals: list) -> Optional[bool]:\n    t = sum(1 for v in vals if v is T)\n    u = sum(1 for v in vals if v is U)\n    if t >= n:\n        return T\n    if t + u < n:\n        return F\n    return U",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "tri_at_least",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "def tri_at_least(n: int, vals: list) -> Optional[bool]:\n    t = sum(1 for v in vals if v is T)\n    u = sum(1 for v in vals if v is U)\n    if t >= n:\n        return T\n    if t + u < n:\n        return F\n    return U\n# --------------------------------------------------------------------------------------\n# Opsi",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "code_matches",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "def code_matches(code: str, pattern: str) -> bool:\n    \"\"\"Cocokkan kode dengan pola wildcard. 'I50.*' juga cocok dengan 'I50'.\"\"\"\n    code, pattern = code.upper(), pattern.upper()\n    if pattern.endswith(\".*\") and code == pattern[:-2]:\n        return True\n    return fnmatch.fnmatchcase(code, pattern)\n# --------------------------------------------------------------------------------------\n# Konteks: akses fakta (header klaim diperlakukan sebagai fakta semu)\n# --------------------------------------------------------------------------------------\nclass Context:",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "derive_facts",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "def derive_facts(doc: dict, opts: Options) -> dict:\n    \"\"\"Kembalikan salinan dokumen dengan fakta turunan ditambahkan.\n    Bila fakta langsung dari database sudah ada untuk field turunan, tidak dihitung ulang.\n    \"\"\"\n    doc = copy.deepcopy(doc)\n    facts = doc.setdefault(\"facts\", [])\n    def present(fld):\n        return [f for f in facts if f[\"field\"] == fld and f[\"status\"] == \"present\"]\n    def has_direct(fld):\n        return any(",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "eval_condition",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "def eval_condition(c: dict, ctx: Context) -> tuple:\n    fld, op = c[\"field\"], c[\"op\"]\n    on_missing = c.get(\"on_missing\", \"review\")\n    trace = {\n        \"kind\": \"condition\",\n        \"label\": c.get(\"label\") or f\"{fld} {op} {c.get('value')}\",\n        \"field\": fld,\n        \"op\": op,\n        \"value\": c.get(\"value\"),\n        \"aggregate\": c.get(\"aggregate\", \"any\"),",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "eval_node",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "def eval_node(n: dict, ctx: Context) -> tuple:\n    if \"field\" in n:\n        return eval_condition(n, ctx)\n    label = n.get(\"label\")\n    if \"all\" in n or \"any\" in n:\n        kind = \"all\" if \"all\" in n else \"any\"\n        kids = [eval_node(k, ctx) for k in n[kind]]\n        res = (tri_all if kind == \"all\" else tri_any)([r for r, _ in kids])\n        return res, {\n            \"kind\": kind,",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "iter_conditions",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "def iter_conditions(n: dict) -> Iterator[dict]:\n    if \"field\" in n:\n        yield n\n    elif \"all\" in n or \"any\" in n:\n        for k in n.get(\"all\") or n.get(\"any\"):\n            yield from iter_conditions(k)\n    elif \"not\" in n:\n        yield from iter_conditions(n[\"not\"])\n    elif \"at_least\" in n:\n        for k in n[\"at_least\"][\"of\"]:",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "evaluate_rule",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "def evaluate_rule(rule: dict, ctx: Context) -> dict:\n    src = rule.get(\"source\", {})\n    base = {\n        \"rule_id\": rule[\"id\"],\n        \"title\": rule[\"title\"],\n        \"type\": rule[\"type\"],\n        \"rule_status\": rule[\"status\"],\n        \"source\": f\"{src.get('document', '?')} {src.get('year', '')}\".strip(),\n        \"verified_against_original\": bool(src.get(\"verified_against_original\")),\n    }",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "evaluate_claim",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "def evaluate_claim(ruleset: dict, doc: dict, options: Optional[Options] = None) -> dict:\n    opts = options or Options()\n    n_before = len(doc.get(\"facts\", []))\n    doc = derive_facts(doc, opts)\n    added_by_engine = doc[\"facts\"][n_before:]  # derive_facts hanya menambah di akhir\n    ctx = Context(doc, opts)\n    results = [evaluate_rule(r, ctx) for r in ruleset[\"rules\"]]\n    counts = Counter(r[\"status\"] for r in results)\n    if counts[\"FAIL\"]:\n        overall = \"FAIL\"",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "lint_rules",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "def lint_rules(ruleset: dict, catalog: dict) -> list:\n    issues = []\n    cat = {f[\"path\"]: f for f in catalog[\"fields\"]}\n    seen = set()\n    def add(level, rid, msg):\n        issues.append({\"level\": level, \"rule_id\": rid, \"message\": msg})\n    for r in ruleset[\"rules\"]:\n        rid = r[\"id\"]\n        if rid in seen:\n            add(\"error\", rid, \"ID aturan duplikat\")",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "def main(argv: Optional[list] = None) -> int:\n    ap = argparse.ArgumentParser(description=\"Engine evaluasi aturan pending klaim\")\n    sub = ap.add_subparsers(dest=\"cmd\", required=True)\n    ev = sub.add_parser(\"evaluate\", help=\"evaluasi satu klaim\")\n    ev.add_argument(\"--rules\", required=True)\n    ev.add_argument(\"--facts\", required=True)\n    ev.add_argument(\"--include-statuses\", nargs=\"+\", default=[\"active\"])\n    ev.add_argument(\"--min-confidence\", type=float, default=0.7)\n    ev.add_argument(\n        \"--missing-doc-policy\", choices=[\"review\", \"fail\"], default=\"review\"",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "TRI_LABEL",
+        "kind": 5,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "TRI_LABEL = {True: \"T\", False: \"F\", None: \"U\"}\ndef tri_all(vals: list) -> Optional[bool]:\n    if any(v is F for v in vals):\n        return F\n    if all(v is T for v in vals):\n        return T\n    return U\ndef tri_any(vals: list) -> Optional[bool]:\n    if any(v is T for v in vals):\n        return T",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "SET_OPS",
+        "kind": 5,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "SET_OPS = {\"contains_any\", \"contains_all\", \"has_code\", \"not_has_code\"}\nCOUNT_OPS = {\"count_gte\", \"count_lte\"}\nSCALAR_OPS = {\"eq\", \"ne\", \"lt\", \"lte\", \"gt\", \"gte\", \"between\", \"in\"}\nALL_OPS = SET_OPS | COUNT_OPS | SCALAR_OPS | {\"exists\", \"not_exists\"}\ndef _cmp(op: str, v: Any, ref: Any) -> Optional[bool]:\n    try:\n        if op == \"eq\":\n            return v == ref\n        if op == \"ne\":\n            return v != ref",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "COUNT_OPS",
+        "kind": 5,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "COUNT_OPS = {\"count_gte\", \"count_lte\"}\nSCALAR_OPS = {\"eq\", \"ne\", \"lt\", \"lte\", \"gt\", \"gte\", \"between\", \"in\"}\nALL_OPS = SET_OPS | COUNT_OPS | SCALAR_OPS | {\"exists\", \"not_exists\"}\ndef _cmp(op: str, v: Any, ref: Any) -> Optional[bool]:\n    try:\n        if op == \"eq\":\n            return v == ref\n        if op == \"ne\":\n            return v != ref\n        if op == \"lt\":",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "SCALAR_OPS",
+        "kind": 5,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "SCALAR_OPS = {\"eq\", \"ne\", \"lt\", \"lte\", \"gt\", \"gte\", \"between\", \"in\"}\nALL_OPS = SET_OPS | COUNT_OPS | SCALAR_OPS | {\"exists\", \"not_exists\"}\ndef _cmp(op: str, v: Any, ref: Any) -> Optional[bool]:\n    try:\n        if op == \"eq\":\n            return v == ref\n        if op == \"ne\":\n            return v != ref\n        if op == \"lt\":\n            return v < ref",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "ALL_OPS",
+        "kind": 5,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "ALL_OPS = SET_OPS | COUNT_OPS | SCALAR_OPS | {\"exists\", \"not_exists\"}\ndef _cmp(op: str, v: Any, ref: Any) -> Optional[bool]:\n    try:\n        if op == \"eq\":\n            return v == ref\n        if op == \"ne\":\n            return v != ref\n        if op == \"lt\":\n            return v < ref\n        if op == \"lte\":",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "OPS_BY_KIND",
+        "kind": 5,
+        "importPath": "src.pending_klaim_rule_engine.klaim_engine",
+        "description": "src.pending_klaim_rule_engine.klaim_engine",
+        "peekOfCode": "OPS_BY_KIND = {\n    \"measurement\": {\n        \"lt\",\n        \"lte\",\n        \"gt\",\n        \"gte\",\n        \"eq\",\n        \"ne\",\n        \"between\",\n        \"in\",",
+        "detail": "src.pending_klaim_rule_engine.klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "TestKleene",
+        "kind": 6,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "class TestKleene(unittest.TestCase):\n    def test_basic(self):\n        self.assertIs(tri_all([True, None]), None)\n        self.assertIs(tri_all([False, None]), False)\n        self.assertIs(tri_any([True, None]), True)\n        self.assertIs(tri_any([False, None]), None)\n        self.assertIs(tri_not(None), None)\n        self.assertIs(tri_at_least(2, [True, True, None]), True)\n        self.assertIs(tri_at_least(2, [True, None, None]), None)\n        self.assertIs(tri_at_least(2, [True, False, False]), False)",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "TestHipokalemia",
+        "kind": 6,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "class TestHipokalemia(unittest.TestCase):\n    DOCS = [\"hasil_lab\", \"resume_medis\"]\n    def make(self, kalium_values, drugs=(\"kcl_injeksi\",), docs=None):\n        facts = [\n            fact(\"lab.kalium\", v, unit=\"mmol/L\", at=f\"2026-09-0{i + 1}T08:00:00+07:00\")\n            for i, v in enumerate(kalium_values)\n        ]\n        if drugs is not None:\n            facts.append(fact(\"therapy.drugs\", list(drugs), kind=\"category_list\"))\n        return claim(",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "TestGagalNapas",
+        "kind": 6,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "class TestGagalNapas(unittest.TestCase):\n    DOCS = [\"hasil_bga\", \"resume_medis\"]\n    def make(self, facts):\n        return claim([(\"J96.0\", \"secondary\")], facts, docs=self.DOCS)\n    def support(self, v=(\"nasal_kanul\",)):\n        return fact(\"therapy.respiratory_support\", list(v), kind=\"category_list\")\n    def test_po2_rendah_cukup_walau_data_lain_kosong(self):\n        d = self.make([fact(\"bga.po2\", 55, unit=\"mmHg\"), self.support()])\n        self.assertEqual(status_of(run(d), \"RI-GAGAL_NAPAS_AKUT\"), \"PASS\")\n    def test_hanya_spo2_normal_review(self):",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "TestKodeDanAdministratif",
+        "kind": 6,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "class TestKodeDanAdministratif(unittest.TestCase):\n    def test_hf_dengan_i10_fail_dan_saran_i113(self):\n        res = run(claim([(\"I50.9\", \"secondary\"), (\"I10\", \"secondary\")]))\n        r = next(x for x in res[\"results\"] if x[\"rule_id\"] == \"RJ-HF_HIPERTENSI\")\n        self.assertEqual(r[\"status\"], \"FAIL\")\n        self.assertEqual(r[\"suggest_codes\"], [\"I11.0\"])\n    def test_hf_tanpa_i10_pass(self):\n        self.assertEqual(\n            status_of(\n                run(claim([(\"I11.0\", \"primary\"), (\"I50.9\", \"secondary\")])),",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "TestSepsisDanStatusAturan",
+        "kind": 6,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "class TestSepsisDanStatusAturan(unittest.TestCase):\n    OPTS = dict(include_statuses=(\"active\", \"needs_clarification\"))\n    MGMT = fact(\"therapy.sepsis_management\", [\"antibiotik_iv\"], kind=\"category_list\")\n    DOCS = [\"resume_medis\"]\n    def test_needs_clarification_dilewati_secara_default(self):\n        self.assertEqual(\n            status_of(run(claim([(\"A41.9\", \"primary\")])), \"RI-SEPSIS\"), \"NOT_APPLICABLE\"\n        )\n    def test_dua_kriteria_vital_cukup_sesuai_teks_ba(self):\n        facts = [",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "TestKualitasData",
+        "kind": 6,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "class TestKualitasData(unittest.TestCase):\n    RULE = {\n        \"id\": \"ALL-DEMAM\",\n        \"title\": \"uji\",\n        \"type\": \"clinical_validation\",\n        \"scope\": \"ALL\",\n        \"status\": \"active\",\n        \"trigger\": {\"codes\": [\"J18.*\"]},\n        \"evidence\": {\"field\": \"symptom.demam\", \"op\": \"eq\", \"value\": True},\n        \"outcome\": {\"pass_message\": \"ok\", \"fail_message\": \"gagal\"},",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "TestAtLeast",
+        "kind": 6,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "class TestAtLeast(unittest.TestCase):\n    NODE = {\n        \"at_least\": {\n            \"n\": 2,\n            \"of\": [\n                {\"field\": \"vital.nadi\", \"op\": \"gt\", \"value\": 90},\n                {\"field\": \"vital.rr\", \"op\": \"gt\", \"value\": 20},\n                {\"field\": \"vital.suhu\", \"op\": \"gt\", \"value\": 38.5},\n            ],\n        }",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "TestLint",
+        "kind": 6,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "class TestLint(unittest.TestCase):\n    def test_contoh_aturan_tanpa_error(self):\n        errors = [i for i in lint_rules(RULES, CATALOG) if i[\"level\"] == \"error\"]\n        self.assertEqual(errors, [])\n    def test_lint_menangkap_masalah(self):\n        bad = copy.deepcopy(RULES)\n        bad[\"rules\"][0][\"treatment\"][\"value\"] = [\"KCl injeksi\"]  # bukan konsep katalog\n        bad[\"rules\"][0][\"evidence\"][\"field\"] = \"lab.tidak_ada\"  # field tidak ada\n        bad[\"rules\"][1][\"treatment\"][\"op\"] = \"lt\"  # operator salah untuk category_list\n        msgs = \" \".join(",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "TestAturanBaru",
+        "kind": 6,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "class TestAturanBaru(unittest.TestCase):\n    def st(self, rid, doc, **opt):\n        return status_of(run(doc, **opt), rid)\n    # --- pneumonia\n    def test_pneumonia(self):\n        base = [\n            flag(\"imaging.thorax_infiltrat_baru\"),\n            fact(\"therapy.pneumonia_management\", [\"antibiotik\"], kind=\"category_list\"),\n        ]\n        docs = [\"hasil_imaging_thorax\", \"resume_medis\"]",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "TestRuleSetLengkap",
+        "kind": 6,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "class TestRuleSetLengkap(unittest.TestCase):\n    def test_lint_tanpa_error(self):\n        errors = [i for i in lint_rules(RULES, CATALOG) if i[\"level\"] == \"error\"]\n        self.assertEqual(errors, [])\n    def test_jumlah_dan_status(self):\n        from collections import Counter\n        c = Counter(r[\"status\"] for r in RULES[\"rules\"])\n        self.assertEqual(len(RULES[\"rules\"]), 23)\n        self.assertEqual(c[\"needs_clarification\"], 2)  # sepsis, anemia RI\n        self.assertEqual(c[\"draft\"], 1)  # prosedur operasi",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "load",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "def load(name):\n    return json.loads((HERE / name).read_text(encoding=\"utf-8\"))\nRULES = load(\"rules_ba_2019.json\")\nCATALOG = load(\"field_catalog.json\")\nBASE = load(\"claim_facts_example.json\")\ndef fact(\n    field,\n    value,\n    kind=\"measurement\",\n    unit=None,",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "fact",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "def fact(\n    field,\n    value,\n    kind=\"measurement\",\n    unit=None,\n    status=\"present\",\n    at=None,\n    method=\"db_query\",\n    **kw,\n):",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "claim",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "def claim(dx, facts=None, enc=\"RI\", docs=None, procs=()):\n    return {\n        \"schema_version\": \"1.0\",\n        \"claim\": {\n            \"claim_id\": \"T\",\n            \"encounter_type\": enc,\n            \"discharge_date\": \"2026-09-05\",\n            \"diagnoses\": [{\"code\": c, \"position\": p} for c, p in dx],\n            \"procedures\": [{\"code\": c} for c in procs],\n            \"documents_available\": docs if docs is not None else [],",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "run",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "def run(doc, **opt):\n    return evaluate_claim(RULES, doc, Options(**opt))\ndef status_of(res, rule_id):\n    return next(r for r in res[\"results\"] if r[\"rule_id\"] == rule_id)[\"status\"]\ndef one_rule(rule_id):\n    return next(r for r in RULES[\"rules\"] if r[\"id\"] == rule_id)\nclass TestKleene(unittest.TestCase):\n    def test_basic(self):\n        self.assertIs(tri_all([True, None]), None)\n        self.assertIs(tri_all([False, None]), False)",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "status_of",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "def status_of(res, rule_id):\n    return next(r for r in res[\"results\"] if r[\"rule_id\"] == rule_id)[\"status\"]\ndef one_rule(rule_id):\n    return next(r for r in RULES[\"rules\"] if r[\"id\"] == rule_id)\nclass TestKleene(unittest.TestCase):\n    def test_basic(self):\n        self.assertIs(tri_all([True, None]), None)\n        self.assertIs(tri_all([False, None]), False)\n        self.assertIs(tri_any([True, None]), True)\n        self.assertIs(tri_any([False, None]), None)",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "one_rule",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "def one_rule(rule_id):\n    return next(r for r in RULES[\"rules\"] if r[\"id\"] == rule_id)\nclass TestKleene(unittest.TestCase):\n    def test_basic(self):\n        self.assertIs(tri_all([True, None]), None)\n        self.assertIs(tri_all([False, None]), False)\n        self.assertIs(tri_any([True, None]), True)\n        self.assertIs(tri_any([False, None]), None)\n        self.assertIs(tri_not(None), None)\n        self.assertIs(tri_at_least(2, [True, True, None]), True)",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "flag",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "def flag(field, v=True, **kw):\n    return fact(field, v, kind=\"flag\", **kw)\ndef cats(field, v):\n    return (\n        fact(field, v, kind=\"category\", **kw)\n        if False\n        else fact(field, v, kind=\"category\")\n    )\nclass TestAturanBaru(unittest.TestCase):\n    def st(self, rid, doc, **opt):",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "cats",
+        "kind": 2,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "def cats(field, v):\n    return (\n        fact(field, v, kind=\"category\", **kw)\n        if False\n        else fact(field, v, kind=\"category\")\n    )\nclass TestAturanBaru(unittest.TestCase):\n    def st(self, rid, doc, **opt):\n        return status_of(run(doc, **opt), rid)\n    # --- pneumonia",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "HERE",
+        "kind": 5,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "HERE = Path(__file__).parent\ndef load(name):\n    return json.loads((HERE / name).read_text(encoding=\"utf-8\"))\nRULES = load(\"rules_ba_2019.json\")\nCATALOG = load(\"field_catalog.json\")\nBASE = load(\"claim_facts_example.json\")\ndef fact(\n    field,\n    value,\n    kind=\"measurement\",",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "RULES",
+        "kind": 5,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "RULES = load(\"rules_ba_2019.json\")\nCATALOG = load(\"field_catalog.json\")\nBASE = load(\"claim_facts_example.json\")\ndef fact(\n    field,\n    value,\n    kind=\"measurement\",\n    unit=None,\n    status=\"present\",\n    at=None,",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "CATALOG",
+        "kind": 5,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "CATALOG = load(\"field_catalog.json\")\nBASE = load(\"claim_facts_example.json\")\ndef fact(\n    field,\n    value,\n    kind=\"measurement\",\n    unit=None,\n    status=\"present\",\n    at=None,\n    method=\"db_query\",",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    },
+    {
+        "label": "BASE",
+        "kind": 5,
+        "importPath": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "description": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "peekOfCode": "BASE = load(\"claim_facts_example.json\")\ndef fact(\n    field,\n    value,\n    kind=\"measurement\",\n    unit=None,\n    status=\"present\",\n    at=None,\n    method=\"db_query\",\n    **kw,",
+        "detail": "src.pending_klaim_rule_engine.test_klaim_engine",
+        "documentation": {}
+    }
+]
