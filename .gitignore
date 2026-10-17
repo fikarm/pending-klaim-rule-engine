@@ -8,6 +8,10 @@ wheels/
 
 # Virtual environments
 .venv
+*.db
 
 # Editor Config
 .vscode
+
+# AI related folders
+graphify-out

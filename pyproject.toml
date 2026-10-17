@@ -7,10 +7,21 @@ authors = [
     { name = "Fikar Mukamal", email = "mukamal.fikar@gmail.com" }
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "alembic>=1.16",
+    "psycopg[binary]>=3.2",
+    "sqlalchemy>=2.0",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
 
 [project.scripts]
 pending-klaim-rule-engine = "pending_klaim_rule_engine:main"
+pending-klaim-rule-engine-seed = "pending_klaim_rule_engine.demo_seed:main"
 
 [build-system]
 requires = ["uv_build>=0.12.15,<0.13.0"]
