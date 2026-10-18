@@ -1,3 +1,5 @@
+"""Lifecycle helpers for creating, reviewing, and activating rule versions."""
+
 from copy import deepcopy
 
 from sqlalchemy import select
@@ -7,7 +9,7 @@ from pending_klaim_rule_engine.models import CodingRule, RuleVersion
 
 
 class InvalidRuleTransition(ValueError):
-    pass
+    """Raised when a rule version is moved through an unsupported lifecycle state."""
 
 
 def create_rule_revision(
@@ -21,6 +23,7 @@ def create_rule_revision(
     official_source_id: int | None = None,
     official_reference: str | None = None,
 ) -> RuleVersion:
+    """Create a new draft revision based on a previously approved rule version."""
     source_version = session.scalar(
         select(RuleVersion)
         .where(RuleVersion.id == source_version_id)
@@ -76,6 +79,7 @@ def create_rule_revision(
 
 
 def review_rule_version(session: Session, version_id: int) -> RuleVersion:
+    """Move a draft rule version into the reviewed state for activation."""
     version = session.scalar(
         select(RuleVersion)
         .where(RuleVersion.id == version_id)
@@ -92,6 +96,7 @@ def review_rule_version(session: Session, version_id: int) -> RuleVersion:
 
 
 def activate_rule_version(session: Session, version_id: int) -> RuleVersion:
+    """Activate the candidate rule version and retire any active version for it."""
     candidate = session.scalar(
         select(RuleVersion)
         .where(RuleVersion.id == version_id)
@@ -127,6 +132,7 @@ def activate_rule_version(session: Session, version_id: int) -> RuleVersion:
 
 
 def get_active_rule_version(session: Session, code: str) -> RuleVersion | None:
+    """Return the active rule version for the supplied diagnosis code, if any."""
     return session.scalar(
         select(RuleVersion)
         .join(CodingRule, RuleVersion.rule_id == CodingRule.id)

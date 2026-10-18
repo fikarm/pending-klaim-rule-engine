@@ -1,3 +1,5 @@
+"""Command-line helpers for collecting claim data and running claim reviews."""
+
 from collections.abc import Callable
 
 from sqlalchemy.orm import Session
@@ -17,6 +19,11 @@ def collect_review_form(
     diagnosis_code: str | None = None,
     position_required: bool = False,
 ) -> StructuredClaimForm:
+    """Collect a structured claim form from interactive user input.
+
+    The prompt sequence reflects the data required by the active rule version,
+    including diagnosis position when the rule criteria require it.
+    """
     if input_fn is None:
         input_fn = input
 
@@ -50,6 +57,7 @@ def run_review_cli(
     input_fn: Callable[[str], str] | None = None,
     output_fn: Callable[[str], None] = print,
 ) -> None:
+    """Run the interactive CLI flow for evaluating one diagnosis claim."""
     if input_fn is None:
         input_fn = input
     diagnosis_code = input_fn("Kode diagnosis yang ditelaah: ")

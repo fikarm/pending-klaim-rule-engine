@@ -42,6 +42,12 @@ For E87.6, collect potassium value, unit and relevant evidence reference, plus w
 
 Rule edits create a new draft version. A reviewer can mark it reviewed and an authorized user activates it; only active versions are used for new evaluations. Past evaluations retain their original rule-version reference. The identity and authorization mechanism for authorized users is an integration decision for deployment.
 
+### Use typed and documented Python interfaces
+
+Every Python function, method, or class introduced or modified by the remaining tasks must use type hints where applicable and concise docstrings that describe its purpose or contract. Add inline comments only for complex or non-obvious control flow, invariants, and persistence decisions; avoid comments that merely narrate straightforward code. This keeps the implementation maintainable without requiring a retrofit of already completed work.
+
+Alternative considered: annotate and document the entire existing package. That would expand this change beyond its remaining implementation tasks without improving the specified review behavior.
+
 ## Risks / Trade-offs
 
 - [The scanned official PDF may be misread during OCR] -> Require human verification of cited pages and criteria before a rule can be activated.

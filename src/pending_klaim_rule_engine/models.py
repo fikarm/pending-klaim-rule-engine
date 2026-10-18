@@ -14,7 +14,8 @@ from sqlalchemy import (
     func,
     inspect,
 )
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.engine import Connection
+from sqlalchemy.orm import DeclarativeBase, Mapped, Mapper, mapped_column
 
 
 class Base(DeclarativeBase):
@@ -92,8 +93,12 @@ class RuleVersion(Base):
     )
 
 
+# Freeze rule contents for reproducible evaluations; lifecycle status may change.
 @event.listens_for(RuleVersion, "before_update")
-def prevent_rule_version_snapshot_changes(mapper, connection, version) -> None:
+def prevent_rule_version_snapshot_changes(
+    mapper: Mapper[RuleVersion], connection: Connection, version: RuleVersion
+) -> None:
+    """Reject changes to a rule snapshot while permitting lifecycle transitions."""
     immutable_fields = (
         "rule_id",
         "version",

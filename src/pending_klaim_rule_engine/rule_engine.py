@@ -1,3 +1,5 @@
+"""Rule-definition and evaluation logic for claim outcome checks."""
+
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from enum import StrEnum
@@ -5,6 +7,8 @@ from typing import Literal, Mapping
 
 
 class RuleOutcome(StrEnum):
+    """Outcome state produced by evaluating a single rule criterion or rule set."""
+
     MET = "met"
     NOT_MET = "not_met"
     EVIDENCE_NOT_FOUND = "evidence_not_found"
@@ -12,6 +16,8 @@ class RuleOutcome(StrEnum):
 
 @dataclass(frozen=True)
 class NumericLessThan:
+    """Criterion requiring numeric evidence to be strictly below a threshold."""
+
     id: str
     description: str
     evidence_key: str
@@ -20,6 +26,8 @@ class NumericLessThan:
 
 @dataclass(frozen=True)
 class TreatmentPresent:
+    """Criterion requiring a treatment or observation to be present."""
+
     id: str
     description: str
     evidence_key: str
@@ -27,6 +35,8 @@ class TreatmentPresent:
 
 @dataclass(frozen=True)
 class PositionEquals:
+    """Criterion requiring a diagnosis position to match an expected value."""
+
     id: str
     description: str
     evidence_key: str
@@ -38,12 +48,15 @@ Criterion = NumericLessThan | TreatmentPresent | PositionEquals
 
 @dataclass(frozen=True)
 class RuleDefinition:
+    """Concrete rule definition made of one or more criteria."""
+
     code: str
     name: str
     criteria: tuple[Criterion, ...]
     operator: Literal["all", "any"] = "all"
 
     def __post_init__(self) -> None:
+        """Validate that rule definitions are structurally coherent."""
         if not self.criteria:
             raise ValueError("A rule must define at least one criterion")
         criterion_ids = [criterion.id for criterion in self.criteria]
@@ -53,6 +66,8 @@ class RuleDefinition:
 
 @dataclass(frozen=True)
 class CriterionResult:
+    """Evaluation result for a single criterion within a rule."""
+
     criterion_id: str
     description: str
     outcome: RuleOutcome
@@ -60,6 +75,8 @@ class CriterionResult:
 
 @dataclass(frozen=True)
 class RuleEvaluation:
+    """Aggregate result for all criteria in a rule definition."""
+
     code: str
     outcome: RuleOutcome
     criteria: tuple[CriterionResult, ...]
@@ -89,6 +106,7 @@ def evaluate_rule(
     rule: RuleDefinition,
     evidence: Mapping[str, object],
 ) -> RuleEvaluation:
+    """Evaluate a rule against the supplied evidence mapping."""
     results = tuple(_evaluate_criterion(criterion, evidence) for criterion in rule.criteria)
     outcomes = tuple(result.outcome for result in results)
 
@@ -114,6 +132,7 @@ def _evaluate_criterion(
     criterion: Criterion,
     evidence: Mapping[str, object],
 ) -> CriterionResult:
+    """Evaluate one criterion against the evidence dictionary."""
     value = evidence.get(criterion.evidence_key)
     if value is None:
         outcome = RuleOutcome.EVIDENCE_NOT_FOUND
@@ -145,6 +164,7 @@ def _evaluate_numeric_less_than(
     criterion: NumericLessThan,
     value: object,
 ) -> RuleOutcome:
+    """Evaluate a numeric threshold criterion against a candidate evidence value."""
     if isinstance(value, bool):
         raise ValueError(f"Evidence '{criterion.evidence_key}' must be numeric")
     try:

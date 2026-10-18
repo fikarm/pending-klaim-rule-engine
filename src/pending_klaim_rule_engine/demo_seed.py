@@ -1,3 +1,6 @@
+"""Utilities for seeding a demo claim rule and activating it for local testing."""
+
+from sqlalchemy import Select, select
 from sqlalchemy.orm import Session
 
 from pending_klaim_rule_engine.database import create_database_engine
@@ -12,6 +15,7 @@ from pending_klaim_rule_engine.rule_lifecycle import (
 
 
 def seed_demo_data(session: Session) -> RuleVersion:
+    """Create and activate the synthetic E87.6 development rule when needed."""
     active_version = get_active_rule_version(session, E87_6_RULE.code)
     if active_version is not None:
         return active_version
@@ -25,17 +29,13 @@ def seed_demo_data(session: Session) -> RuleVersion:
     session.add(source)
     session.flush()
 
-    rule = session.scalar(
-        select_rule_by_code(E87_6_RULE.code)
-    )
+    rule = session.scalar(select_rule_by_code(E87_6_RULE.code))
     if rule is None:
         rule = CodingRule(code=E87_6_RULE.code, name=E87_6_RULE.name)
         session.add(rule)
         session.flush()
 
-    latest_version = session.scalar(
-        select_latest_rule_version(rule.id)
-    )
+    latest_version = session.scalar(select_latest_rule_version(rule.id))
     version = RuleVersion(
         rule_id=rule.id,
         version=(latest_version.version + 1) if latest_version else 1,
@@ -51,15 +51,13 @@ def seed_demo_data(session: Session) -> RuleVersion:
     return activate_rule_version(session, version.id)
 
 
-def select_rule_by_code(code: str):
-    from sqlalchemy import select
-
+def select_rule_by_code(code: str) -> Select[tuple[CodingRule]]:
+    """Return the SQLAlchemy query for selecting a coding rule by its code."""
     return select(CodingRule).where(CodingRule.code == code)
 
 
-def select_latest_rule_version(rule_id: int):
-    from sqlalchemy import select
-
+def select_latest_rule_version(rule_id: int) -> Select[tuple[RuleVersion]]:
+    """Return the latest version query for the supplied coding-rule identifier."""
     return (
         select(RuleVersion)
         .where(RuleVersion.rule_id == rule_id)
@@ -69,6 +67,7 @@ def select_latest_rule_version(rule_id: int):
 
 
 def main() -> None:
+    """Seed the demo rule into the configured database and print a notice."""
     engine = create_database_engine()
     try:
         with Session(engine) as session:

@@ -1,3 +1,5 @@
+"""Rule-review orchestration: evaluate a claim against the active rule version."""
+
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any
@@ -12,6 +14,7 @@ from pending_klaim_rule_engine.models import (
 )
 from pending_klaim_rule_engine.review_form import StructuredClaimForm
 from pending_klaim_rule_engine.rule_engine import (
+    Criterion,
     NumericLessThan,
     PositionEquals,
     RuleDefinition,
@@ -23,10 +26,10 @@ from pending_klaim_rule_engine.rule_lifecycle import get_active_rule_version
 
 
 class NoActiveRuleError(LookupError):
-    pass
+    """Raised when no active rule exists for the requested diagnosis code."""
 
 
-OUTCOME_LABELS = {
+OUTCOME_LABELS: dict[str, str] = {
     "met": "TERPENUHI",
     "not_met": "TIDAK TERPENUHI",
     "evidence_not_found": "BUKTI BELUM DITEMUKAN",
@@ -35,6 +38,8 @@ OUTCOME_LABELS = {
 
 @dataclass(frozen=True)
 class CriterionReview:
+    """Human-readable review result for a single criterion in a report."""
+
     criterion_id: str
     description: str
     outcome: str
@@ -44,6 +49,8 @@ class CriterionReview:
 
 @dataclass(frozen=True)
 class ReviewReport:
+    """Final evaluation record that can be formatted for the CLI output."""
+
     evaluation_id: int
     diagnosis_code: str
     diagnosis_position: str | None
@@ -56,6 +63,7 @@ class ReviewReport:
 
 
 def format_review_report(report: ReviewReport) -> str:
+    """Render a review report as a plain-text summary for the operator."""
     lines = [
         f"Telaah diagnosis {report.diagnosis_code}",
         f"Status kriteria gabungan: {OUTCOME_LABELS[report.outcome]}",
@@ -86,6 +94,7 @@ def format_review_report(report: ReviewReport) -> str:
 
 
 def serialize_rule(rule: RuleDefinition) -> list[dict[str, Any]]:
+    """Convert a rule definition to the lightweight JSON-friendly schema used in storage."""
     criteria: list[dict[str, Any]] = []
     for criterion in rule.criteria:
         if isinstance(criterion, NumericLessThan):
@@ -124,6 +133,7 @@ def evaluate_claim(
     session: Session,
     form: StructuredClaimForm,
 ) -> ReviewReport:
+    """Evaluate a claim form against the active rule and persist the assessment."""
     version = get_active_rule_version(session, form.diagnosis_code)
     if version is None:
         raise NoActiveRuleError(
@@ -200,7 +210,8 @@ def evaluate_claim(
 
 
 def _deserialize_rule(code: str, version: RuleVersion) -> RuleDefinition:
-    criteria = []
+    """Rebuild a rule definition object from the persisted version criteria."""
+    criteria: list[Criterion] = []
     for item in version.criteria:
         criterion_type = item["type"]
         if criterion_type == "numeric_less_than":
@@ -239,7 +250,12 @@ def _deserialize_rule(code: str, version: RuleVersion) -> RuleDefinition:
     )
 
 
-def _evidence_for_criterion(criterion, form, values_by_key):
+def _evidence_for_criterion(
+    criterion: Criterion,
+    form: StructuredClaimForm,
+    values_by_key: dict[str, object | None],
+) -> tuple[object | None, object | None]:
+    """Return persisted and rendered evidence values for a criterion."""
     if isinstance(criterion, PositionEquals):
         value = form.diagnosis_position
         return value, value

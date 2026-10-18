@@ -1,14 +1,18 @@
+"""Structured validation helpers for claim-review form data."""
+
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from typing import Mapping
 
 
 class FormValidationError(ValueError):
-    pass
+    """Raised when claim-form values fail the validation rules."""
 
 
 @dataclass(frozen=True)
 class StructuredClaimForm:
+    """Normalized evidence bundle collected from a claim review form."""
+
     diagnosis_code: str
     diagnosis_position: str | None
     potassium_value: Decimal | None
@@ -19,6 +23,7 @@ class StructuredClaimForm:
 
     @classmethod
     def from_fields(cls, fields: Mapping[str, object]) -> "StructuredClaimForm":
+        """Build a validated claim form from a raw mapping of input fields."""
         diagnosis_code = _required_text(fields, "diagnosis_code").upper()
         diagnosis_position = _optional_text(fields, "diagnosis_position")
         if diagnosis_position not in (None, "primary", "secondary"):
@@ -72,12 +77,14 @@ class StructuredClaimForm:
         )
 
     def evidence_values(self) -> dict[str, object | None]:
+        """Return the raw evidence values keyed by the rule-engine evidence names."""
         return {
             "potassium": self.potassium_value,
             "kcl_injection": self.kcl_injection,
         }
 
     def evidence_references(self) -> dict[str, str | None]:
+        """Return source references keyed by the rule-engine evidence names."""
         return {
             "potassium": self.potassium_reference,
             "kcl_injection": self.kcl_reference,
@@ -85,6 +92,7 @@ class StructuredClaimForm:
 
 
 def _required_text(fields: Mapping[str, object], key: str) -> str:
+    """Return a required text value or raise a validation error."""
     value = _optional_text(fields, key)
     if value is None:
         raise FormValidationError(f"{key} is required")
@@ -92,6 +100,7 @@ def _required_text(fields: Mapping[str, object], key: str) -> str:
 
 
 def _optional_text(fields: Mapping[str, object], key: str) -> str | None:
+    """Normalize a field to trimmed text, or return None if it is absent."""
     value = fields.get(key)
     if value is None:
         return None
@@ -102,5 +111,6 @@ def _optional_text(fields: Mapping[str, object], key: str) -> str | None:
 
 
 def _reject_unpaired_fields(key: str, *related_values: str | None) -> None:
+    """Raise when a value is missing while a paired evidence field is present."""
     if any(value is not None for value in related_values):
         raise FormValidationError(f"{key} is required when related fields are set")
